@@ -1,0 +1,10 @@
+target/
+debug/
+
+**/*.rs.bk
+
+*.pdb
+
+.vscode
+.idea
+
