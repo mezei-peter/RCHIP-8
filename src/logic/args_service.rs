@@ -17,12 +17,11 @@ impl ArgsService {
             return;
         }
         println!("ROM path: {}", rom_path);
-        let file_contents_res = fs::read_to_string(rom_path);
+        let file_contents_res = fs::read(rom_path);
         if file_contents_res.is_err() {
             println!("File not found.");
             return;
         }
-        let file_contents = file_contents_res.unwrap();
-        let rom: &[u8] = file_contents.as_bytes();
+        let rom = file_contents_res.unwrap();
     }
 }
