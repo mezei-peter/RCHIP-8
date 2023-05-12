@@ -1,6 +1,7 @@
 const FONT_SIZE: usize = 5;
 const ALL_FONT_COUNT: usize = 16;
 
+#[derive(Debug)]
 pub struct Interpreter;
 
 impl Interpreter {

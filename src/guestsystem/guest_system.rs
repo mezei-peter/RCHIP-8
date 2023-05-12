@@ -1,3 +1,5 @@
+use crate::logic::interpreter::Interpreter;
+
 use super::components::{cpu::Cpu, display::DisplayScreen, memory::Memory};
 
 pub struct GuestSystem {
@@ -15,7 +17,7 @@ impl GuestSystem {
         }
     }
 
-    pub fn load_program_to_memory(&self, bytes: &Vec<u8>) {
-        todo!()
+    pub fn run_program(&self, program: &Vec<u8>, interpreter: &Interpreter) {
+        todo!();
     }
 }
