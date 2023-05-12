@@ -1,4 +1,4 @@
-use sdl2::Sdl;
+use sdl2::{Sdl, event::Event, keyboard::Keycode};
 
 use crate::logic::interpreter::Interpreter;
 
@@ -26,7 +26,16 @@ impl<'a> GuestSystem<'a> {
     pub fn run_program(&mut self, program: &Vec<u8>, interpreter: &Interpreter) {
         self.memory.load_fonts(interpreter.generate_fonts());
         self.memory.load_program(&program);
-        dbg!(&self.memory);
-        todo!();
+
+        let mut event_pump = self.sdl_ctx.event_pump().unwrap();
+        'running: loop {
+            for event in event_pump.poll_iter() {
+                match event {
+                    Event::Quit { .. } |
+                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
+                    _ => {}
+                }
+            }
+        }
     }
 }
