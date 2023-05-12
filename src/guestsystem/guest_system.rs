@@ -17,7 +17,9 @@ impl GuestSystem {
         }
     }
 
-    pub fn run_program(&self, program: &Vec<u8>, interpreter: &Interpreter) {
+    pub fn run_program(&mut self, program: &Vec<u8>, interpreter: &Interpreter) {
+        self.memory.load_fonts(interpreter.generate_fonts());
+        self.memory.load_program(&program);
         todo!();
     }
 }
