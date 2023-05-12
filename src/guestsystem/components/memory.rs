@@ -18,18 +18,21 @@ impl Memory {
         }
     }
 
-    pub fn load_program(&self, program: &[u8]) {
-        todo!()
+    pub fn load_program(&mut self, program: &[u8]) {
+        self.load(&program, PROGRAM_ADDRESS);
     }
 
     pub fn load_fonts(&mut self, fonts: [u8; FONT_SIZE * ALL_FONT_COUNT]) {
-        let length: usize = fonts.len();
+        self.load(&fonts, FONTS_ADDRESS);
+    }
+
+    fn load(&mut self, buffer: &[u8], address: usize) {
+        let length: usize = buffer.len();
         let mut i: usize = 0;
         while i < length {
-            let font_byte: u8 = fonts[i];
-            self.heap[FONTS_ADDRESS + i] = font_byte;
+            let font_byte: u8 = buffer[i];
+            self.heap[address + i] = font_byte;
             i += 1;
         }
-        dbg!(self);
     }
 }
