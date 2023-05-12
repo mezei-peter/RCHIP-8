@@ -1,19 +1,25 @@
+use sdl2::Sdl;
+
 use crate::logic::interpreter::Interpreter;
 
-use super::components::{cpu::Cpu, display::DisplayScreen, memory::Memory};
+use super::components::{cpu::Cpu, display::DisplayScreen, keypad::Keypad, memory::Memory};
 
-pub struct GuestSystem {
+pub struct GuestSystem<'a> {
     memory: Memory,
-    display: DisplayScreen,
+    display: DisplayScreen<'a>,
     cpu: Cpu,
+    keypad: Keypad<'a>,
+    sdl_ctx: &'a Sdl,
 }
 
-impl GuestSystem {
-    pub fn new(memory: Memory, display: DisplayScreen, cpu: Cpu) -> GuestSystem {
+impl<'a> GuestSystem<'a> {
+    pub fn new(memory: Memory, cpu: Cpu, sdl_ctx: &'a Sdl) -> GuestSystem<'a> {
         GuestSystem {
-            memory,
-            display,
-            cpu,
+            memory: memory,
+            cpu: cpu,
+            sdl_ctx: sdl_ctx,
+            display: DisplayScreen::new(&sdl_ctx),
+            keypad: Keypad::new(&sdl_ctx),
         }
     }
 
