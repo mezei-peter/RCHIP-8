@@ -8,8 +8,9 @@ pub struct Memory {
 
 impl Memory {
     pub fn new() -> Memory {
-        Memory { heap: [0; FOUR_KIBI], stack: Vec::new() }
+        Memory {
+            heap: [0; FOUR_KIBI],
+            stack: Vec::new(),
+        }
     }
 }
-
-
