@@ -3,9 +3,9 @@ const VARIABLE_REGISTER_COUNT: usize = 16;
 pub struct Cpu {
     program_counter: u16,
     index_register: u16,
-    variable_registers: [u16; VARIABLE_REGISTER_COUNT],
-    delay_timer: u16,
-    sound_timer: u16,
+    variable_registers: [u8; VARIABLE_REGISTER_COUNT],
+    delay_timer: u8,
+    sound_timer: u8,
 }
 
 impl Cpu {
