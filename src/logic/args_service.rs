@@ -7,21 +7,22 @@ impl ArgsService {
         ArgsService
     }
 
-    pub fn run(&self, args: &Vec<String>) {
-        let rom_path: &str = match args.get(1) {
+    pub fn find_path_arg(&self, args: &Vec<String>) -> String {
+        let path: &str = match args.get(1) {
             Some(path) => path,
             None => "",
         };
+        path.to_string()
+    }
+
+    pub fn read_rom(&self, rom_path: &str) -> Result<Vec<u8>, &str> {
         if rom_path == "" {
-            println!("No path provided for ROM.");
-            return;
+            return Err("No path provided for ROM.");
         }
-        println!("ROM path: {}", rom_path);
         let file_contents_res = fs::read(rom_path);
         if file_contents_res.is_err() {
-            println!("File not found.");
-            return;
+            return Err("File not found.");
         }
-        let rom = file_contents_res.unwrap();
+        Ok(file_contents_res.unwrap())
     }
 }

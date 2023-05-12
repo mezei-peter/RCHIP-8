@@ -20,5 +20,9 @@ pub fn main() {
     let args: Vec<String> = env::args().collect();
     let guest_system: GuestSystem = GuestSystem::new(Memory::new(), DisplayScreen::new(), Cpu::new());
     let args_service: ArgsService = ArgsService::new();
-    args_service.run(&args);
+    let path: String = args_service.find_path_arg(&args);
+    match args_service.read_rom(&path) {
+        Ok(rom_bytes) => guest_system.load_program_to_memory(&rom_bytes),
+        Err(msg) => println!("{}", msg)
+    }
 }
