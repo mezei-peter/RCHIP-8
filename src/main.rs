@@ -23,7 +23,7 @@ extern crate sdl2;
 pub fn main() {
     let args: Vec<String> = env::args().collect();
     let args_service: ArgsService = ArgsService::new();
-    let guest_system: GuestSystem =
+    let mut guest_system: GuestSystem =
         GuestSystem::new(Memory::new(), DisplayScreen::new(), Cpu::new());
     let interpreter: Interpreter = Interpreter::new();
     
