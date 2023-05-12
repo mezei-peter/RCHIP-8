@@ -5,3 +5,9 @@ pub struct GuestSystem {
     display: DisplayScreen,
     cpu: Cpu,
 }
+
+impl GuestSystem {
+    pub fn new(memory: Memory, display: DisplayScreen, cpu: Cpu) -> GuestSystem {
+        GuestSystem { memory, display, cpu }
+    }
+}
