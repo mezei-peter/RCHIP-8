@@ -1,8 +1,16 @@
 mod logic {
     pub mod args_service;
 }
+mod guestsystem {
+    pub mod components {
+        pub mod cpu;
+        pub mod display;
+        pub mod memory;
+    }
+    pub mod guest_system;
+}
 
-use logic::{args_service::ArgsService};
+use logic::args_service::ArgsService;
 use std::env;
 
 extern crate sdl2;
