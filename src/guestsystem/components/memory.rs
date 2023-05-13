@@ -43,4 +43,9 @@ impl Memory {
     pub fn get_heap_size(&self) -> usize {
         self.heap.len()
     }
+
+    pub fn get_heap_slice(&self, from: u16, length: u16) -> &[u8] {
+        let to_exclusive: u16 = from + length - 1;
+        &self.heap[from as usize..to_exclusive as usize]
+    }
 }
