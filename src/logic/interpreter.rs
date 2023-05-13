@@ -1,7 +1,4 @@
-use crate::guestsystem::components::{
-    cpu::{Cpu, CpuInst},
-    memory::Memory,
-};
+use crate::guestsystem::components::{cpu::CpuInst, memory::Memory};
 
 pub const FONT_SIZE: usize = 5;
 pub const ALL_FONT_COUNT: usize = 16;
@@ -40,7 +37,7 @@ impl Interpreter {
         let byte_2: u8 = memory.at_address(address + 1);
         ((byte_1 as u16) << 8) | byte_2 as u16
     }
-    
+
     pub fn prev_pc(&self, current_address: u16) -> u16 {
         current_address - 2
     }
@@ -104,7 +101,7 @@ impl Interpreter {
             0x0006 => CpuInst::ShiftRightXY(self.make_x(raw), self.make_y(raw)),
             0x0007 => CpuInst::SubsFromRightXY(self.make_x(raw), self.make_y(raw)),
             0x000E => CpuInst::ShiftLeftXY(self.make_x(raw), self.make_y(raw)),
-            _ => CpuInst::InvalidInstruction
+            _ => CpuInst::InvalidInstruction,
         }
     }
 
@@ -112,7 +109,7 @@ impl Interpreter {
         match raw & 0xF0FF {
             0xE09E => CpuInst::SkipIfKeyX(self.make_x(raw)),
             0xE0A1 => CpuInst::SkipIfNotKeyX(self.make_x(raw)),
-            _ => CpuInst::InvalidInstruction
+            _ => CpuInst::InvalidInstruction,
         }
     }
 
@@ -127,7 +124,7 @@ impl Interpreter {
             0xF033 => CpuInst::DecimalConversionX(self.make_x(raw)),
             0xF055 => CpuInst::StoreInMemoryX(self.make_x(raw)),
             0xF065 => CpuInst::LoadFromMemoryX(self.make_x(raw)),
-            _ => CpuInst::InvalidInstruction
+            _ => CpuInst::InvalidInstruction,
         }
     }
 
@@ -150,5 +147,4 @@ impl Interpreter {
     fn make_nnn(&self, raw: u16) -> u16 {
         raw & 0x0FFF
     }
-
 }

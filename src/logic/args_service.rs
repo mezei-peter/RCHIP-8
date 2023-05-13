@@ -1,6 +1,6 @@
 use std::{fs, io::stdin};
 
-use crate::config::EmulatorConfig;
+use crate::config::CpuConfig;
 
 pub struct ArgsService;
 
@@ -38,8 +38,8 @@ impl ArgsService {
         return false;
     }
 
-    pub fn prompt_config(&self) -> EmulatorConfig {
-        println!("-- Configuration Options --");
+    pub fn prompt_config(&self) -> CpuConfig {
+        println!("-- CPU Configuration Options --");
         println!();
         println!("  Would you like to allow: ");
         let modern_shift: bool =
@@ -49,7 +49,7 @@ impl ArgsService {
         let modern_store_and_load: bool = self.prompt_config_option(
             "  -> modern method of storing data in/loading data from memory? (Y/N)",
         );
-        EmulatorConfig::new(modern_shift, modern_jump_offset, modern_store_and_load)
+        CpuConfig::new(modern_shift, modern_jump_offset, modern_store_and_load)
     }
 
     fn read_line(&self) -> String {

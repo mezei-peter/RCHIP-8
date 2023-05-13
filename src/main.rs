@@ -13,9 +13,9 @@ mod guestsystem {
     pub mod guest_system;
 }
 
-use config::EmulatorConfig;
+use config::CpuConfig;
 use guestsystem::{
-    components::{cpu::Cpu, display::DisplayScreen, keypad::Keypad, memory::Memory},
+    components::{cpu::Cpu, memory::Memory},
     guest_system::GuestSystem,
 };
 use logic::{args_service::ArgsService, interpreter::Interpreter};
@@ -28,13 +28,14 @@ pub fn main() {
     let args: Vec<String> = env::args().collect();
     let args_service: ArgsService = ArgsService::new();
     let path: String = args_service.find_path_arg(&args);
-    let mut emulator_config: EmulatorConfig = EmulatorConfig::default();
+    let mut cpu_config: CpuConfig = CpuConfig::default();
     if args_service.find_config_arg(&args) {
-        emulator_config = args_service.prompt_config();
+        cpu_config = args_service.prompt_config();
     }
 
     let sdl_context: Sdl = sdl2::init().unwrap();
-    let mut guest_system: GuestSystem = GuestSystem::new(Memory::new(), Cpu::new(emulator_config), &sdl_context);
+    let mut guest_system: GuestSystem =
+        GuestSystem::new(Memory::new(), Cpu::new(cpu_config), &sdl_context);
     let interpreter: Interpreter = Interpreter::new();
 
     match args_service.read_rom(&path) {

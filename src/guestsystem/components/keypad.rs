@@ -1,7 +1,4 @@
-use sdl2::{
-    keyboard::{Keycode, Scancode},
-    Sdl,
-};
+use sdl2::{keyboard::Scancode, Sdl};
 
 pub struct Keypad<'a> {
     context: &'a Sdl,

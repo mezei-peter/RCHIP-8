@@ -1,8 +1,4 @@
-use sdl2::{
-    event::Event,
-    keyboard::{Keycode, Scancode},
-    Sdl,
-};
+use sdl2::{event::Event, keyboard::Keycode, Sdl};
 
 use crate::logic::interpreter::Interpreter;
 

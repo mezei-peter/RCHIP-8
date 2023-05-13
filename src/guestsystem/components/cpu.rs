@@ -1,10 +1,7 @@
 use rand::Rng;
 use sdl2::EventPump;
 
-use crate::{
-    config::EmulatorConfig,
-    logic::interpreter::{self, Interpreter},
-};
+use crate::{config::CpuConfig, logic::interpreter::Interpreter};
 
 use super::{
     display::DisplayScreen,
@@ -60,18 +57,18 @@ pub struct Cpu {
     variable_registers: [u8; VARIABLE_REGISTER_COUNT],
     delay_timer: u8,
     sound_timer: u8,
-    emulator_config: EmulatorConfig,
+    config: CpuConfig,
 }
 
 impl Cpu {
-    pub fn new(emulator_config: EmulatorConfig) -> Cpu {
+    pub fn new(config: CpuConfig) -> Cpu {
         Cpu {
             program_counter: 0,
             index_register: 0,
             variable_registers: [0; VARIABLE_REGISTER_COUNT],
             delay_timer: 0,
             sound_timer: 0,
-            emulator_config,
+            config,
         }
     }
 
@@ -204,7 +201,7 @@ impl Cpu {
                     .wrapping_sub(self.variable_registers[*x as usize])
             }
             CpuInst::ShiftLeftXY(x, y) => {
-                if !self.emulator_config.modern_shift() {
+                if !self.config.modern_shift() {
                     self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
                 }
                 let msb: bool = self.variable_registers[*x as usize] & 0x80 == 0x80;
@@ -216,7 +213,7 @@ impl Cpu {
                 }
             }
             CpuInst::ShiftRightXY(x, y) => {
-                if !self.emulator_config.modern_shift() {
+                if !self.config.modern_shift() {
                     self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
                 }
                 let lsb: bool = self.variable_registers[*x as usize] & 1 == 1;
@@ -229,7 +226,7 @@ impl Cpu {
             }
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
             CpuInst::JmpOffsetNNN(nnn) => {
-                if self.emulator_config.modern_jump_offset() {
+                if self.config.modern_jump_offset() {
                     let x: u8 = interpreter.make_x(*nnn);
                     let address = *nnn + self.variable_registers[x as usize] as u16;
                     self.program_counter = interpreter.prev_pc(address);
