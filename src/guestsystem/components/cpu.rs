@@ -11,7 +11,7 @@ use super::{
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
 #[derive(Debug)]
-pub enum CpuInstruction {
+pub enum CpuInst {
     ExecMlrNNN(u16),
     Cls,
     JmpNNN(u16),
@@ -97,13 +97,13 @@ impl Cpu {
         instruction
     }
 
-    pub fn decode(&self, raw_instruction: u16, interpreter: &Interpreter) -> CpuInstruction {
+    pub fn decode(&self, raw_instruction: u16, interpreter: &Interpreter) -> CpuInst {
         interpreter.decode(raw_instruction)
     }
 
     pub fn execute(
         &mut self,
-        instruction: &CpuInstruction,
+        instruction: &CpuInst,
         interpreter: &Interpreter,
         memory: &mut Memory,
         display: &mut DisplayScreen,
@@ -111,49 +111,47 @@ impl Cpu {
         event_pump: &mut EventPump,
     ) {
         match instruction {
-            CpuInstruction::ExecMlrNNN(_) => {},
-            CpuInstruction::Cls => display.clear_screen(),
-            CpuInstruction::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
-            CpuInstruction::SubRoutineNNN(_) => {},
-            CpuInstruction::SubReturn => {},
-            CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
-            CpuInstruction::SkipIfEqXNN(_, _) => {},
-            CpuInstruction::SkipIfNotEqXNN(_, _) => {},
-            CpuInstruction::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
-            CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
-            CpuInstruction::SkipIfEqXY(_, _) => {},
-            CpuInstruction::SkipIfNotEqXY(_, _) => {},
-            CpuInstruction::SetXY(_, _) => {},
-            CpuInstruction::BitOrXY(_, _) => {},
-            CpuInstruction::BitAndXY(_, _) => {},
-            CpuInstruction::BitXorXY(_, _) => {},
-            CpuInstruction::AddXY(_, _) => {},
-            CpuInstruction::SubsFromLeftXY(_, _) => {},
-            CpuInstruction::SubsFromRightXY(_, _) => {},
-            CpuInstruction::ShiftLeftXY(_, _) =>{},
-            CpuInstruction::ShiftRightXY(_, _) => {},
-            CpuInstruction::JmpOffsetNNN(_) => {},
-            CpuInstruction::RandomXNN(_, _) => {},
-            CpuInstruction::DisplayXYN(x, y, n) => {
-                display.display(
-                    self.variable_registers[*x as usize],
-                    self.variable_registers[*y as usize],
-                    memory.get_heap_slice(self.index_register, *n as u16),
-                    self,
-                )
-            }
-            CpuInstruction::SkipIfKeyX(_) => {},
-            CpuInstruction::SkipIfNotKeyX(_) => {},
-            CpuInstruction::SetRegToDelayX(_) => {},
-            CpuInstruction::SetDelayX(_) => {},
-            CpuInstruction::SetSoundX(_) => {},
-            CpuInstruction::AddToIndexX(_) => {},
-            CpuInstruction::WaitForKeyX(_) => {},
-            CpuInstruction::SetIndexToFontX(_) => {},
-            CpuInstruction::DecimalConversionX(_) => {},
-            CpuInstruction::StoreInMemoryX(_) => {},
-            CpuInstruction::LoadFromMemoryX(_) => {},
-            CpuInstruction::InvalidInstruction => {},
+            CpuInst::ExecMlrNNN(_) => {}
+            CpuInst::Cls => display.clear_screen(),
+            CpuInst::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
+            CpuInst::SubRoutineNNN(_) => {}
+            CpuInst::SubReturn => {}
+            CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
+            CpuInst::SkipIfEqXNN(_, _) => {}
+            CpuInst::SkipIfNotEqXNN(_, _) => {}
+            CpuInst::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
+            CpuInst::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
+            CpuInst::SkipIfEqXY(_, _) => {}
+            CpuInst::SkipIfNotEqXY(_, _) => {}
+            CpuInst::SetXY(_, _) => {}
+            CpuInst::BitOrXY(_, _) => {}
+            CpuInst::BitAndXY(_, _) => {}
+            CpuInst::BitXorXY(_, _) => {}
+            CpuInst::AddXY(_, _) => {}
+            CpuInst::SubsFromLeftXY(_, _) => {}
+            CpuInst::SubsFromRightXY(_, _) => {}
+            CpuInst::ShiftLeftXY(_, _) => {}
+            CpuInst::ShiftRightXY(_, _) => {}
+            CpuInst::JmpOffsetNNN(_) => {}
+            CpuInst::RandomXNN(_, _) => {}
+            CpuInst::DisplayXYN(x, y, n) => display.display(
+                self.variable_registers[*x as usize],
+                self.variable_registers[*y as usize],
+                memory.get_heap_slice(self.index_register, *n as u16),
+                self,
+            ),
+            CpuInst::SkipIfKeyX(_) => {}
+            CpuInst::SkipIfNotKeyX(_) => {}
+            CpuInst::SetRegToDelayX(_) => {}
+            CpuInst::SetDelayX(_) => {}
+            CpuInst::SetSoundX(_) => {}
+            CpuInst::AddToIndexX(_) => {}
+            CpuInst::WaitForKeyX(_) => {}
+            CpuInst::SetIndexToFontX(_) => {}
+            CpuInst::DecimalConversionX(_) => {}
+            CpuInst::StoreInMemoryX(_) => {}
+            CpuInst::LoadFromMemoryX(_) => {}
+            CpuInst::InvalidInstruction => {}
         }
     }
 }

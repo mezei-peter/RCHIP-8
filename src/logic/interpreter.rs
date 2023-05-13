@@ -1,5 +1,5 @@
 use crate::guestsystem::components::{
-    cpu::{Cpu, CpuInstruction},
+    cpu::{Cpu, CpuInst},
     memory::Memory,
 };
 
@@ -49,85 +49,85 @@ impl Interpreter {
         current_address + 2
     }
 
-    pub fn decode(&self, raw: u16) -> CpuInstruction {
+    pub fn decode(&self, raw: u16) -> CpuInst {
         match raw & 0xF000 {
             0x0000 => self.decode_0(raw),
-            0x1000 => CpuInstruction::JmpNNN(self.make_nnn(raw)),
-            0x2000 => CpuInstruction::SubRoutineNNN(self.make_nnn(raw)),
-            0x3000 => CpuInstruction::SkipIfEqXNN(self.make_x(raw), self.make_nn(raw)),
-            0x4000 => CpuInstruction::SkipIfNotEqXNN(self.make_x(raw), self.make_nn(raw)),
+            0x1000 => CpuInst::JmpNNN(self.make_nnn(raw)),
+            0x2000 => CpuInst::SubRoutineNNN(self.make_nnn(raw)),
+            0x3000 => CpuInst::SkipIfEqXNN(self.make_x(raw), self.make_nn(raw)),
+            0x4000 => CpuInst::SkipIfNotEqXNN(self.make_x(raw), self.make_nn(raw)),
             0x5000 => {
                 if raw & 0x000F == 0x0000 {
-                    CpuInstruction::SkipIfEqXY(self.make_x(raw), self.make_y(raw))
+                    CpuInst::SkipIfEqXY(self.make_x(raw), self.make_y(raw))
                 } else {
-                    CpuInstruction::InvalidInstruction
+                    CpuInst::InvalidInstruction
                 }
             }
-            0x6000 => CpuInstruction::SetXNN(self.make_x(raw), self.make_nn(raw)),
-            0x7000 => CpuInstruction::AddXNN(self.make_x(raw), self.make_nn(raw)),
+            0x6000 => CpuInst::SetXNN(self.make_x(raw), self.make_nn(raw)),
+            0x7000 => CpuInst::AddXNN(self.make_x(raw), self.make_nn(raw)),
             0x8000 => self.decode_8(raw),
             0x9000 => {
                 if raw & 0x000F == 0x0000 {
-                    CpuInstruction::SkipIfNotEqXY(self.make_x(raw), self.make_y(raw))
+                    CpuInst::SkipIfNotEqXY(self.make_x(raw), self.make_y(raw))
                 } else {
-                    CpuInstruction::InvalidInstruction
+                    CpuInst::InvalidInstruction
                 }
             }
-            0xA000 => CpuInstruction::SetIndexNNN(self.make_nnn(raw)),
-            0xB000 => CpuInstruction::JmpOffsetNNN(self.make_nnn(raw)),
-            0xC000 => CpuInstruction::RandomXNN(self.make_x(raw), self.make_nn(raw)),
-            0xD000 => CpuInstruction::DisplayXYN(self.make_x(raw), self.make_y(raw), self.make_n(raw)),
+            0xA000 => CpuInst::SetIndexNNN(self.make_nnn(raw)),
+            0xB000 => CpuInst::JmpOffsetNNN(self.make_nnn(raw)),
+            0xC000 => CpuInst::RandomXNN(self.make_x(raw), self.make_nn(raw)),
+            0xD000 => CpuInst::DisplayXYN(self.make_x(raw), self.make_y(raw), self.make_n(raw)),
             0xE000 => self.decode_e(raw),
             0xF000 => self.decode_f(raw),
-            _ => CpuInstruction::InvalidInstruction,
+            _ => CpuInst::InvalidInstruction,
         }
     }
 
-    fn decode_0(&self, raw: u16) -> CpuInstruction {
+    fn decode_0(&self, raw: u16) -> CpuInst {
         if raw & 0x00FF == 0x00EE {
-            return CpuInstruction::SubReturn;
+            return CpuInst::SubReturn;
         }
         if raw & 0x00F0 == 0x00E0 {
-            return CpuInstruction::Cls;
+            return CpuInst::Cls;
         }
-        CpuInstruction::ExecMlrNNN(self.make_nnn(raw))
+        CpuInst::ExecMlrNNN(self.make_nnn(raw))
     }
 
-    fn decode_8(&self, raw: u16) -> CpuInstruction {
+    fn decode_8(&self, raw: u16) -> CpuInst {
         match raw & 0x000F {
-            0x0000 => CpuInstruction::SetXY(self.make_x(raw), self.make_y(raw)),
-            0x0001 => CpuInstruction::BitOrXY(self.make_x(raw), self.make_y(raw)),
-            0x0002 => CpuInstruction::BitAndXY(self.make_x(raw), self.make_y(raw)),
-            0x0003 => CpuInstruction::BitXorXY(self.make_x(raw), self.make_y(raw)),
-            0x0004 => CpuInstruction::AddXY(self.make_x(raw), self.make_y(raw)),
-            0x0005 => CpuInstruction::SubsFromLeftXY(self.make_x(raw), self.make_y(raw)),
-            0x0006 => CpuInstruction::ShiftRightXY(self.make_x(raw), self.make_y(raw)),
-            0x0007 => CpuInstruction::SubsFromRightXY(self.make_x(raw), self.make_y(raw)),
-            0x000E => CpuInstruction::ShiftLeftXY(self.make_x(raw), self.make_y(raw)),
-            _ => CpuInstruction::InvalidInstruction
+            0x0000 => CpuInst::SetXY(self.make_x(raw), self.make_y(raw)),
+            0x0001 => CpuInst::BitOrXY(self.make_x(raw), self.make_y(raw)),
+            0x0002 => CpuInst::BitAndXY(self.make_x(raw), self.make_y(raw)),
+            0x0003 => CpuInst::BitXorXY(self.make_x(raw), self.make_y(raw)),
+            0x0004 => CpuInst::AddXY(self.make_x(raw), self.make_y(raw)),
+            0x0005 => CpuInst::SubsFromLeftXY(self.make_x(raw), self.make_y(raw)),
+            0x0006 => CpuInst::ShiftRightXY(self.make_x(raw), self.make_y(raw)),
+            0x0007 => CpuInst::SubsFromRightXY(self.make_x(raw), self.make_y(raw)),
+            0x000E => CpuInst::ShiftLeftXY(self.make_x(raw), self.make_y(raw)),
+            _ => CpuInst::InvalidInstruction
         }
     }
 
-    fn decode_e(&self, raw: u16) -> CpuInstruction {
+    fn decode_e(&self, raw: u16) -> CpuInst {
         match raw & 0xF0FF {
-            0xE09E => CpuInstruction::SkipIfKeyX(self.make_x(raw)),
-            0xE0A1 => CpuInstruction::SkipIfNotKeyX(self.make_x(raw)),
-            _ => CpuInstruction::InvalidInstruction
+            0xE09E => CpuInst::SkipIfKeyX(self.make_x(raw)),
+            0xE0A1 => CpuInst::SkipIfNotKeyX(self.make_x(raw)),
+            _ => CpuInst::InvalidInstruction
         }
     }
 
-    fn decode_f(&self, raw: u16) -> CpuInstruction {
+    fn decode_f(&self, raw: u16) -> CpuInst {
         match raw & 0xF0FF {
-            0xF007 => CpuInstruction::SetRegToDelayX(self.make_x(raw)),
-            0xF015 => CpuInstruction::SetDelayX(self.make_x(raw)),
-            0xF018 => CpuInstruction::SetSoundX(self.make_x(raw)),
-            0xF01E => CpuInstruction::AddToIndexX(self.make_x(raw)),
-            0xF00A => CpuInstruction::WaitForKeyX(self.make_x(raw)),
-            0xF029 => CpuInstruction::SetIndexToFontX(self.make_x(raw)),
-            0xF033 => CpuInstruction::DecimalConversionX(self.make_x(raw)),
-            0xF055 => CpuInstruction::StoreInMemoryX(self.make_x(raw)),
-            0xF065 => CpuInstruction::LoadFromMemoryX(self.make_x(raw)),
-            _ => CpuInstruction::InvalidInstruction
+            0xF007 => CpuInst::SetRegToDelayX(self.make_x(raw)),
+            0xF015 => CpuInst::SetDelayX(self.make_x(raw)),
+            0xF018 => CpuInst::SetSoundX(self.make_x(raw)),
+            0xF01E => CpuInst::AddToIndexX(self.make_x(raw)),
+            0xF00A => CpuInst::WaitForKeyX(self.make_x(raw)),
+            0xF029 => CpuInst::SetIndexToFontX(self.make_x(raw)),
+            0xF033 => CpuInst::DecimalConversionX(self.make_x(raw)),
+            0xF055 => CpuInst::StoreInMemoryX(self.make_x(raw)),
+            0xF065 => CpuInst::LoadFromMemoryX(self.make_x(raw)),
+            _ => CpuInst::InvalidInstruction
         }
     }
 
