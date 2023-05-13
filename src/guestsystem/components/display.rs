@@ -1,4 +1,7 @@
-use std::{time::{Instant, Duration}, thread};
+use std::{
+    thread,
+    time::{Duration, Instant},
+};
 
 use sdl2::{pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl, VideoSubsystem};
 
@@ -52,7 +55,7 @@ impl<'a> DisplayScreen<'a> {
 
         for data in sprite {
             let mut x: u8 = x_coord % WIDTH;
-            if y >= HEIGHT {
+            if y > HEIGHT {
                 break;
             }
             let mut byte: u8 = data.clone();
