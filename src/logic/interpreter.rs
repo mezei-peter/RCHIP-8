@@ -48,33 +48,33 @@ impl Interpreter {
     pub fn decode(&self, raw: u16) -> CpuInstruction {
         match raw & 0xF000 {
             0x0000 => self.decode_0(raw),
-            0x1000 => CpuInstruction::JmpNNN(self.make_NNN(raw)),
-            0x2000 => CpuInstruction::SubRoutineNNN(self.make_NNN(raw)),
-            0x3000 => CpuInstruction::SkipIfEqXNN(self.make_X(raw), self.make_NN(raw)),
-            0x4000 => CpuInstruction::SkipIfNotEqXNN(self.make_X(raw), self.make_NN(raw)),
+            0x1000 => CpuInstruction::JmpNNN(self.make_nnn(raw)),
+            0x2000 => CpuInstruction::SubRoutineNNN(self.make_nnn(raw)),
+            0x3000 => CpuInstruction::SkipIfEqXNN(self.make_x(raw), self.make_nn(raw)),
+            0x4000 => CpuInstruction::SkipIfNotEqXNN(self.make_x(raw), self.make_nn(raw)),
             0x5000 => {
                 if raw & 0x000F == 0x0000 {
-                    CpuInstruction::SkipIfEqXY(self.make_X(raw), self.make_Y(raw))
+                    CpuInstruction::SkipIfEqXY(self.make_x(raw), self.make_y(raw))
                 } else {
                     CpuInstruction::InvalidInstruction
                 }
             }
-            0x6000 => CpuInstruction::SetXNN(self.make_X(raw), self.make_NN(raw)),
-            0x7000 => CpuInstruction::AddXNN(self.make_X(raw), self.make_NN(raw)),
+            0x6000 => CpuInstruction::SetXNN(self.make_x(raw), self.make_nn(raw)),
+            0x7000 => CpuInstruction::AddXNN(self.make_x(raw), self.make_nn(raw)),
             0x8000 => self.decode_8(raw),
             0x9000 => {
                 if raw & 0x000F == 0x0000 {
-                    CpuInstruction::SkipIfNotEqXY(self.make_X(raw), self.make_Y(raw))
+                    CpuInstruction::SkipIfNotEqXY(self.make_x(raw), self.make_y(raw))
                 } else {
                     CpuInstruction::InvalidInstruction
                 }
             }
-            0xA000 => CpuInstruction::SetIndexNNN(self.make_NNN(raw)),
-            0xB000 => CpuInstruction::JmpOffsetNNN(self.make_NNN(raw)),
-            0xC000 => CpuInstruction::RandomXNN(self.make_X(raw), self.make_NN(raw)),
-            0xD000 => CpuInstruction::DisplayXYN(self.make_X(raw), self.make_Y(raw), self.make_N(raw)),
-            0xE000 => self.decode_E(raw),
-            0xF000 => self.decode_F(raw),
+            0xA000 => CpuInstruction::SetIndexNNN(self.make_nnn(raw)),
+            0xB000 => CpuInstruction::JmpOffsetNNN(self.make_nnn(raw)),
+            0xC000 => CpuInstruction::RandomXNN(self.make_x(raw), self.make_nn(raw)),
+            0xD000 => CpuInstruction::DisplayXYN(self.make_x(raw), self.make_y(raw), self.make_n(raw)),
+            0xE000 => self.decode_e(raw),
+            0xF000 => self.decode_f(raw),
             _ => CpuInstruction::InvalidInstruction,
         }
     }
@@ -86,38 +86,38 @@ impl Interpreter {
         if raw & 0x00F0 == 0x00E0 {
             return CpuInstruction::Cls;
         }
-        CpuInstruction::ExecMlrNNN(self.make_NNN(raw))
+        CpuInstruction::ExecMlrNNN(self.make_nnn(raw))
     }
 
     fn decode_8(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_E(&self, raw: u16) -> CpuInstruction {
+    fn decode_e(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_F(&self, raw: u16) -> CpuInstruction {
+    fn decode_f(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn make_X(&self, raw: u16) -> u8 {
-        (raw & 0x0F00 >> 8) as u8
+    fn make_x(&self, raw: u16) -> u8 {
+        ((raw & 0x0F00) >> 8) as u8
     }
 
-    fn make_Y(&self, raw: u16) -> u8 {
-        (raw & 0x00F0 >> 4) as u8
+    fn make_y(&self, raw: u16) -> u8 {
+        ((raw & 0x00F0) >> 4) as u8
     }
 
-    fn make_N(&self, raw: u16) -> u8 {
+    fn make_n(&self, raw: u16) -> u8 {
         (raw & 0x000F) as u8
     }
 
-    fn make_NN(&self, raw: u16) -> u8 {
+    fn make_nn(&self, raw: u16) -> u8 {
         (raw & 0x00FF) as u8
     }
 
-    fn make_NNN(&self, raw: u16) -> u16 {
+    fn make_nnn(&self, raw: u16) -> u16 {
         raw & 0x0FFF
     }
 }
