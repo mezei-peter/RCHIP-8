@@ -105,7 +105,11 @@ impl Interpreter {
     }
 
     fn decode_e(&self, raw: u16) -> CpuInstruction {
-        todo!()
+        match raw & 0xF0FF {
+            0xE09E => CpuInstruction::SkipIfKeyX(self.make_x(raw)),
+            0xE0A1 => CpuInstruction::SkipIfNotKeyX(self.make_x(raw)),
+            _ => CpuInstruction::InvalidInstruction
+        }
     }
 
     fn decode_f(&self, raw: u16) -> CpuInstruction {
