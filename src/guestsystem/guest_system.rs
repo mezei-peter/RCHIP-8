@@ -1,4 +1,4 @@
-use sdl2::{Sdl, event::Event, keyboard::Keycode};
+use sdl2::{event::Event, keyboard::{Keycode, Scancode}, Sdl};
 
 use crate::logic::interpreter::Interpreter;
 
@@ -31,11 +31,24 @@ impl<'a> GuestSystem<'a> {
         'running: loop {
             for event in event_pump.poll_iter() {
                 match event {
-                    Event::Quit { .. } |
-                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'running,
-                    _ => {}
+                    Event::Quit { .. } => break 'running,
+                    _ => self.handle_keys(&event),
                 }
             }
+        }
+    }
+
+    fn handle_keys(&mut self, event: &Event) {
+        match event {
+            Event::KeyDown { scancode: Some(scode), .. } => {
+                let byte_val = self.keypad.scancode_to_byte(scode);
+                if byte_val.is_none() {
+                    return;
+                } else {
+                    println!("VALID KEY!");
+                }
+            },
+            _ => {}
         }
     }
 }
