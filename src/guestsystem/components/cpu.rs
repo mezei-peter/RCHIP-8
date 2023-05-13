@@ -114,8 +114,13 @@ impl Cpu {
             CpuInst::ExecMlrNNN(_) => {}
             CpuInst::Cls => display.clear_screen(),
             CpuInst::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
-            CpuInst::SubRoutineNNN(_) => {}
-            CpuInst::SubReturn => {}
+            CpuInst::SubRoutineNNN(nnn) => {
+                memory.push_stack(self.program_counter);
+                self.program_counter = interpreter.prev_pc(*nnn)
+            }
+            CpuInst::SubReturn => {
+                self.program_counter = memory.pop_stack().expect("Error: Cannot from pop stack")
+            }
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
             CpuInst::SkipIfEqXNN(_, _) => {}
             CpuInst::SkipIfNotEqXNN(_, _) => {}

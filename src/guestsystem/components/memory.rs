@@ -48,4 +48,12 @@ impl Memory {
         let to_exclusive: u16 = from + length - 1;
         &self.heap[from as usize..to_exclusive as usize]
     }
+
+    pub fn push_stack(&mut self, arg: u16) {
+        self.stack.push(arg);
+    }
+
+    pub fn pop_stack(&mut self) -> Option<u16> {
+        self.stack.pop()
+    }
 }
