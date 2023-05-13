@@ -1,3 +1,4 @@
+use rand::Rng;
 use sdl2::EventPump;
 
 use crate::{
@@ -237,7 +238,10 @@ impl Cpu {
                     self.program_counter = interpreter.prev_pc(address);
                 }
             }
-            CpuInst::RandomXNN(_, _) => {}
+            CpuInst::RandomXNN(x, nn) => {
+                let random_number: u8 = rand::thread_rng().gen();
+                self.variable_registers[*x as usize] = random_number & *nn;
+            }
             CpuInst::DisplayXYN(x, y, n) => display.display(
                 self.variable_registers[*x as usize],
                 self.variable_registers[*y as usize],
