@@ -18,7 +18,6 @@ pub struct DisplayScreen<'a> {
     context: &'a Sdl,
     canvas: Canvas<Window>,
     pixels: [[bool; HEIGHT as usize]; WIDTH as usize],
-    last_frame_time: Instant,
 }
 
 impl<'a> DisplayScreen<'a> {
@@ -38,7 +37,6 @@ impl<'a> DisplayScreen<'a> {
             context,
             canvas,
             pixels: [[false; HEIGHT as usize]; WIDTH as usize],
-            last_frame_time: Instant::now(),
         }
     }
 
@@ -48,7 +46,7 @@ impl<'a> DisplayScreen<'a> {
         }
         self.canvas.set_draw_color(COLOR_OFF);
         self.canvas.clear();
-        self.wait_for_refresh();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
     }
 
@@ -84,13 +82,13 @@ impl<'a> DisplayScreen<'a> {
     fn draw_pixel(&mut self, x: u8, y: u8) {
         self.pixels[x as usize][y as usize] = true;
         self.canvas.set_draw_color(COLOR_ON);
-        let x_canv: i32 = (x as i32) * (SIZE_MULTIPLIER as i32) + 1;
-        let y_canv: i32 = (y as i32) * (SIZE_MULTIPLIER as i32) + 1;
-        let px_size: u32 = SIZE_MULTIPLIER as u32 - 2;
+        let x_canv: i32 = (x as i32) * (SIZE_MULTIPLIER as i32);
+        let y_canv: i32 = (y as i32) * (SIZE_MULTIPLIER as i32);
+        let px_size: u32 = SIZE_MULTIPLIER as u32;
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while drawing pixel on display.");
-        self.wait_for_refresh();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
     }
 
@@ -103,15 +101,7 @@ impl<'a> DisplayScreen<'a> {
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while erasing pixel on display.");
-        self.wait_for_refresh();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
-    }
-
-    fn wait_for_refresh(&mut self) {
-        let elapsed: Duration = self.last_frame_time.elapsed();
-        if elapsed < Duration::from_secs_f64(1.0 / REFRESH_FPS) {
-            thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS) - elapsed);
-        }
-        self.last_frame_time = Instant::now();
     }
 }
