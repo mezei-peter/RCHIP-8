@@ -43,7 +43,6 @@ impl<'a> DisplayScreen<'a> {
     }
 
     pub fn clear_screen(&mut self) {
-        println!("CLEAR SCREEN");
         for mut col in self.pixels {
             col.fill(false);
         }
@@ -59,15 +58,9 @@ impl<'a> DisplayScreen<'a> {
 
         for data in sprite {
             let mut x: u8 = x_coord % WIDTH;
-            if y > HEIGHT {
-                break;
-            }
             let mut byte: u8 = data.clone();
             for _ in 0..8 {
-                if x >= WIDTH {
-                    break;
-                }
-                let bit: bool = byte.leading_ones() > 0;
+                let bit: bool = byte & 0x80 == 0x80;
                 let pixel: bool = self.pixels[x as usize][y as usize];
                 if bit && pixel {
                     self.erase_pixel(x, y);
@@ -75,8 +68,14 @@ impl<'a> DisplayScreen<'a> {
                 } else if bit && !pixel {
                     self.draw_pixel(x, y);
                 }
-                byte <<= 1;
+                if x == WIDTH - 1 {
+                    break;
+                }
                 x += 1;
+                byte <<= 1;
+            }
+            if y == HEIGHT - 1 {
+                break;
             }
             y += 1;
         }

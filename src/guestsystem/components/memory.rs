@@ -45,8 +45,7 @@ impl Memory {
     }
 
     pub fn get_heap_slice(&self, from: u16, length: u16) -> &[u8] {
-        let to_exclusive: u16 = from + length - 1;
-        &self.heap[from as usize..to_exclusive as usize]
+        &self.heap[from as usize..from as usize + length as usize]
     }
 
     pub fn push_stack(&mut self, arg: u16) {
