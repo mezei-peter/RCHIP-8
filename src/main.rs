@@ -6,16 +6,18 @@ mod guestsystem {
     pub mod components {
         pub mod cpu;
         pub mod display;
+        pub mod keypad;
         pub mod memory;
     }
     pub mod guest_system;
 }
 
 use guestsystem::{
-    components::{cpu::Cpu, display::DisplayScreen, memory::Memory},
+    components::{cpu::Cpu, display::DisplayScreen, keypad::Keypad, memory::Memory},
     guest_system::GuestSystem,
 };
 use logic::{args_service::ArgsService, interpreter::Interpreter};
+use sdl2::Sdl;
 use std::env;
 
 extern crate sdl2;
@@ -23,10 +25,10 @@ extern crate sdl2;
 pub fn main() {
     let args: Vec<String> = env::args().collect();
     let args_service: ArgsService = ArgsService::new();
-    let mut guest_system: GuestSystem =
-        GuestSystem::new(Memory::new(), DisplayScreen::new(), Cpu::new());
+    let sdl_context: Sdl = sdl2::init().unwrap();
+    let mut guest_system: GuestSystem = GuestSystem::new(Memory::new(), Cpu::new(), &sdl_context);
     let interpreter: Interpreter = Interpreter::new();
-    
+
     let path: String = args_service.find_path_arg(&args);
     match args_service.read_rom(&path) {
         Ok(rom_bytes) => guest_system.run_program(&rom_bytes, &interpreter),
