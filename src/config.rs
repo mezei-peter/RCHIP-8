@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct EmulatorConfig {
     modern_shift: bool,
     modern_jump_offset: bool,

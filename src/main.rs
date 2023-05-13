@@ -13,6 +13,7 @@ mod guestsystem {
     pub mod guest_system;
 }
 
+use config::EmulatorConfig;
 use guestsystem::{
     components::{cpu::Cpu, display::DisplayScreen, keypad::Keypad, memory::Memory},
     guest_system::GuestSystem,
@@ -26,11 +27,17 @@ extern crate sdl2;
 pub fn main() {
     let args: Vec<String> = env::args().collect();
     let args_service: ArgsService = ArgsService::new();
+    let path: String = args_service.find_path_arg(&args);
+    let mut emulator_config: EmulatorConfig = EmulatorConfig::default();
+    if args_service.find_config_arg(&args) {
+        emulator_config = args_service.prompt_config();
+    }
+    dbg!(emulator_config);
+
     let sdl_context: Sdl = sdl2::init().unwrap();
     let mut guest_system: GuestSystem = GuestSystem::new(Memory::new(), Cpu::new(), &sdl_context);
     let interpreter: Interpreter = Interpreter::new();
 
-    let path: String = args_service.find_path_arg(&args);
     match args_service.read_rom(&path) {
         Ok(rom_bytes) => guest_system.run_program(&rom_bytes, &interpreter),
         Err(msg) => println!("{}", msg),
