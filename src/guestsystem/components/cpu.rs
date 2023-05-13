@@ -110,7 +110,7 @@ impl Cpu {
             CpuInstruction::Cls => display.clear_screen(),
             CpuInstruction::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
             CpuInstruction::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
-            CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += nn,
+            CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
             CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
             _ => {}
         }
