@@ -45,24 +45,24 @@ impl Interpreter {
         current_address + 2
     }
 
-    pub fn decode(&self, raw_instruction: u16) -> CpuInstruction {
-        match raw_instruction & 0xF000 {
-            0x0000 => self.decode_0(raw_instruction),
-            0x1000 => self.decode_1(raw_instruction),
-            0x2000 => self.decode_2(raw_instruction),
-            0x3000 => self.decode_3(raw_instruction),
-            0x4000 => self.decode_4(raw_instruction),
-            0x5000 => self.decode_5(raw_instruction),
-            0x6000 => self.decode_6(raw_instruction),
-            0x7000 => self.decode_7(raw_instruction),
-            0x8000 => self.decode_8(raw_instruction),
-            0x9000 => self.decode_9(raw_instruction),
-            0xA000 => self.decode_A(raw_instruction),
-            0xB000 => self.decode_B(raw_instruction),
-            0xC000 => self.decode_C(raw_instruction),
-            0xD000 => self.decode_D(raw_instruction),
-            0xE000 => self.decode_E(raw_instruction),
-            0xF000 => self.decode_F(raw_instruction),
+    pub fn decode(&self, raw: u16) -> CpuInstruction {
+        match raw & 0xF000 {
+            0x0000 => self.decode_0(raw),
+            0x1000 => CpuInstruction::JmpNNN(self.make_NNN(raw)),
+            0x2000 => CpuInstruction::SubRoutineNNN(self.make_NNN(raw)),
+            0x3000 => CpuInstruction::SkipIfEqXNN(self.make_X(raw), self.make_NN(raw)),
+            0x4000 => todo!(),
+            0x5000 => todo!(),
+            0x6000 => todo!(),
+            0x7000 => todo!(),
+            0x8000 => self.decode_8(raw),
+            0x9000 => todo!(),
+            0xA000 => todo!(),
+            0xB000 => todo!(),
+            0xC000 => todo!(),
+            0xD000 => todo!(),
+            0xE000 => self.decode_E(raw),
+            0xF000 => self.decode_F(raw),
             _ => CpuInstruction::InvalidInstruction,
         }
     }
@@ -77,55 +77,7 @@ impl Interpreter {
         CpuInstruction::ExecMlrNNN(self.make_NNN(raw))
     }
 
-    fn decode_1(&self, raw: u16) -> CpuInstruction {
-        CpuInstruction::JmpNNN(self.make_NNN(raw))
-    }
-
-    fn decode_2(&self, raw: u16) -> CpuInstruction {
-        CpuInstruction::SubRoutineNNN(self.make_NNN(raw))
-    }
-
-    fn decode_3(&self, raw: u16) -> CpuInstruction {
-        CpuInstruction::SkipIfEqXNN(self.make_X(raw), self.make_NN(raw))
-    }
-
-    fn decode_4(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_5(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_6(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_7(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
     fn decode_8(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_9(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_A(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_B(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_C(&self, raw: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_D(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
