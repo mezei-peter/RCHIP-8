@@ -36,6 +36,7 @@ impl<'a> GuestSystem<'a> {
         'running: loop {
             let raw_instruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
             let instruction: CpuInstruction = self.cpu.decode(raw_instruction, interpreter);
+            dbg!(instruction);
             for event in event_pump.poll_iter() {
                 match event {
                     Event::KeyDown { keycode: Some(Keycode::Escape), .. } |

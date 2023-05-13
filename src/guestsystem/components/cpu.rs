@@ -4,6 +4,7 @@ use super::memory::{Memory, PROGRAM_ADDRESS};
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
+#[derive(Debug)]
 pub enum CpuInstruction {
     ExecMlrNNN(u16),
     Cls,

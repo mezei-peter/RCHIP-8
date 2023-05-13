@@ -63,77 +63,97 @@ impl Interpreter {
             0xD000 => self.decode_D(raw_instruction),
             0xE000 => self.decode_E(raw_instruction),
             0xF000 => self.decode_F(raw_instruction),
-            _ => CpuInstruction::InvalidInstruction
+            _ => CpuInstruction::InvalidInstruction,
         }
     }
 
-    fn decode_0(&self, raw_instruction: u16) -> CpuInstruction {
-        if raw_instruction & 0x00FF == raw_instruction & 0x00EE {
+    fn decode_0(&self, raw: u16) -> CpuInstruction {
+        if raw & 0x00FF == 0x00EE {
             return CpuInstruction::SubReturn;
         }
-        if raw_instruction & 0x00F0 == 0x00E0 {
+        if raw & 0x00F0 == 0x00E0 {
             return CpuInstruction::Cls;
         }
-        CpuInstruction::ExecMlrNNN(raw_instruction & 0x0FFF)
+        CpuInstruction::ExecMlrNNN(self.make_NNN(raw))
     }
 
-    fn decode_1(&self, raw_instruction: u16) -> CpuInstruction {
-        todo!()
+    fn decode_1(&self, raw: u16) -> CpuInstruction {
+        CpuInstruction::JmpNNN(self.make_NNN(raw))
     }
 
-    fn decode_2(&self, raw_instruction: u16) -> CpuInstruction {
-        todo!()
+    fn decode_2(&self, raw: u16) -> CpuInstruction {
+        CpuInstruction::SubRoutineNNN(self.make_NNN(raw))
     }
 
-    fn decode_3(&self, raw_instruction: u16) -> CpuInstruction {
-        todo!()
+    fn decode_3(&self, raw: u16) -> CpuInstruction {
+        CpuInstruction::SkipIfEqXNN(self.make_X(raw), self.make_NN(raw))
     }
 
-    fn decode_4(&self, raw_instruction: u16) -> CpuInstruction {
-        todo!()
-    }
-
-    fn decode_5(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_4(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_6(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_5(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_7(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_6(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_8(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_7(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_9(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_8(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_A(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_9(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_B(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_A(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_C(&self, raw_instruction: u16) -> CpuInstruction {
-        todo!()
-    }
-    
-    fn decode_D(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_B(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_E(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_C(&self, raw: u16) -> CpuInstruction {
         todo!()
     }
 
-    fn decode_F(&self, raw_instruction: u16) -> CpuInstruction {
+    fn decode_D(&self, raw: u16) -> CpuInstruction {
         todo!()
+    }
+
+    fn decode_E(&self, raw: u16) -> CpuInstruction {
+        todo!()
+    }
+
+    fn decode_F(&self, raw: u16) -> CpuInstruction {
+        todo!()
+    }
+
+    fn make_X(&self, raw: u16) -> u8 {
+        (raw & 0x0F00 >> 8) as u8
+    }
+
+    fn make_Y(&self, raw: u16) -> u8 {
+        (raw & 0x00F0 >> 4) as u8
+    }
+
+    fn make_N(&self, raw: u16) -> u8 {
+        (raw & 0x000F) as u8
+    }
+
+    fn make_NN(&self, raw: u16) -> u8 {
+        (raw & 0x00FF) as u8
+    }
+
+    fn make_NNN(&self, raw: u16) -> u16 {
+        raw & 0x0FFF
     }
 }
