@@ -1,3 +1,5 @@
+use std::{time::{Instant, Duration}, thread};
+
 use sdl2::{pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl, VideoSubsystem};
 
 use super::cpu::Cpu;
@@ -7,11 +9,13 @@ const COLOR_ON: Color = Color::WHITE;
 const WIDTH: u8 = 64;
 const HEIGHT: u8 = 32;
 const SIZE_MULTIPLIER: u8 = 10;
+const REFRESH_FPS: f64 = 60.0;
 
 pub struct DisplayScreen<'a> {
     context: &'a Sdl,
     canvas: Canvas<Window>,
     pixels: [[bool; HEIGHT as usize]; WIDTH as usize],
+    last_frame_time: Instant,
 }
 
 impl<'a> DisplayScreen<'a> {
@@ -31,6 +35,7 @@ impl<'a> DisplayScreen<'a> {
             context,
             canvas,
             pixels: [[false; HEIGHT as usize]; WIDTH as usize],
+            last_frame_time: Instant::now(),
         }
     }
 
@@ -42,11 +47,11 @@ impl<'a> DisplayScreen<'a> {
     }
 
     pub fn display(&mut self, x_coord: u8, y_coord: u8, sprite: &[u8], cpu: &mut Cpu) {
-        let mut x: u8 = x_coord % WIDTH;
         let mut y: u8 = y_coord % HEIGHT;
         cpu.set_flag_register(0);
 
         for data in sprite {
+            let mut x: u8 = x_coord % WIDTH;
             if y >= HEIGHT {
                 break;
             }
@@ -79,6 +84,7 @@ impl<'a> DisplayScreen<'a> {
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while drawing pixel on display.");
+        self.wait_for_refresh();
         self.canvas.present();
     }
 
@@ -91,6 +97,15 @@ impl<'a> DisplayScreen<'a> {
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while erasing pixel on display.");
+        self.wait_for_refresh();
         self.canvas.present();
+    }
+
+    fn wait_for_refresh(&mut self) {
+        let elapsed: Duration = self.last_frame_time.elapsed();
+        if elapsed < Duration::from_secs_f64(1.0 / REFRESH_FPS) {
+            thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS) - elapsed);
+        }
+        self.last_frame_time = Instant::now();
     }
 }
