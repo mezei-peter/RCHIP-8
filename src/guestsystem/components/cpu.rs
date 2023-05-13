@@ -1,6 +1,6 @@
 use sdl2::EventPump;
 
-use crate::logic::interpreter::Interpreter;
+use crate::logic::interpreter::{self, Interpreter};
 
 use super::{
     display::DisplayScreen,
@@ -100,18 +100,19 @@ impl Cpu {
     pub fn execute(
         &mut self,
         instruction: &CpuInstruction,
+        interpreter: &Interpreter,
         memory: &mut Memory,
         display: &mut DisplayScreen,
         keypad: &Keypad,
         event_pump: &mut EventPump,
     ) {
         match instruction {
-            CpuInstruction::Cls => self.clear_screen(display),
+            CpuInstruction::Cls => display.clear_screen(),
+            CpuInstruction::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
+            CpuInstruction::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
+            CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += nn,
+            CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
             _ => {}
         }
-    }
-
-    fn clear_screen(&self, display: &mut DisplayScreen) {
-        display.clear_screen();
     }
 }

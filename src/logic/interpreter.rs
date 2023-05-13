@@ -40,6 +40,10 @@ impl Interpreter {
         let byte_2: u8 = memory.at_address(address + 1);
         ((byte_1 as u16) << 8) | byte_2 as u16
     }
+    
+    pub fn prev_pc(&self, current_address: u16) -> u16 {
+        current_address - 2
+    }
 
     pub fn next_pc(&self, current_address: u16) -> u16 {
         current_address + 2
@@ -146,4 +150,5 @@ impl Interpreter {
     fn make_nnn(&self, raw: u16) -> u16 {
         raw & 0x0FFF
     }
+
 }

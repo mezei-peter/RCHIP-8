@@ -43,6 +43,7 @@ impl<'a> GuestSystem<'a> {
             let instruction: CpuInstruction = self.cpu.decode(raw_instruction, interpreter);
             self.cpu.execute(
                 &instruction,
+                &interpreter,
                 &mut self.memory,
                 &mut self.display,
                 &self.keypad,
