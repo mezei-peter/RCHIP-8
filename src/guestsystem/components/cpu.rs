@@ -39,8 +39,8 @@ pub enum CpuInstruction {
     WaitForKeyX(u8),
     SetIndexToFontX(u8),
     DecimalConversionX(u8),
-    StoreMemoryX(u8),
-    LoadMemoryX(u8),
+    StoreInMemoryX(u8),
+    LoadFromMemoryX(u8),
     InvalidInstruction,
 }
 

@@ -113,7 +113,18 @@ impl Interpreter {
     }
 
     fn decode_f(&self, raw: u16) -> CpuInstruction {
-        todo!()
+        match raw & 0xF0FF {
+            0xF007 => CpuInstruction::SetRegToDelayX(self.make_x(raw)),
+            0xF015 => CpuInstruction::SetDelayX(self.make_x(raw)),
+            0xF018 => CpuInstruction::SetSoundX(self.make_x(raw)),
+            0xF01E => CpuInstruction::AddToIndexX(self.make_x(raw)),
+            0xF00A => CpuInstruction::WaitForKeyX(self.make_x(raw)),
+            0xF029 => CpuInstruction::SetIndexToFontX(self.make_x(raw)),
+            0xF033 => CpuInstruction::DecimalConversionX(self.make_x(raw)),
+            0xF055 => CpuInstruction::StoreInMemoryX(self.make_x(raw)),
+            0xF065 => CpuInstruction::LoadFromMemoryX(self.make_x(raw)),
+            _ => CpuInstruction::InvalidInstruction
+        }
     }
 
     fn make_x(&self, raw: u16) -> u8 {
