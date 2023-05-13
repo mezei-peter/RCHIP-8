@@ -23,9 +23,6 @@ use std::env;
 extern crate sdl2;
 
 pub fn main() {
-    let byte: u8 = 0b11101;
-    println!("{}", byte.leading_ones());
-
     let args: Vec<String> = env::args().collect();
     let args_service: ArgsService = ArgsService::new();
     let sdl_context: Sdl = sdl2::init().unwrap();
