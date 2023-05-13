@@ -51,16 +51,28 @@ impl Interpreter {
             0x1000 => CpuInstruction::JmpNNN(self.make_NNN(raw)),
             0x2000 => CpuInstruction::SubRoutineNNN(self.make_NNN(raw)),
             0x3000 => CpuInstruction::SkipIfEqXNN(self.make_X(raw), self.make_NN(raw)),
-            0x4000 => todo!(),
-            0x5000 => todo!(),
-            0x6000 => todo!(),
-            0x7000 => todo!(),
+            0x4000 => CpuInstruction::SkipIfNotEqXNN(self.make_X(raw), self.make_NN(raw)),
+            0x5000 => {
+                if raw & 0x000F == 0x0000 {
+                    CpuInstruction::SkipIfEqXY(self.make_X(raw), self.make_Y(raw))
+                } else {
+                    CpuInstruction::InvalidInstruction
+                }
+            }
+            0x6000 => CpuInstruction::SetXNN(self.make_X(raw), self.make_NN(raw)),
+            0x7000 => CpuInstruction::AddXNN(self.make_X(raw), self.make_NN(raw)),
             0x8000 => self.decode_8(raw),
-            0x9000 => todo!(),
-            0xA000 => todo!(),
-            0xB000 => todo!(),
-            0xC000 => todo!(),
-            0xD000 => todo!(),
+            0x9000 => {
+                if raw & 0x000F == 0x0000 {
+                    CpuInstruction::SkipIfNotEqXY(self.make_X(raw), self.make_Y(raw))
+                } else {
+                    CpuInstruction::InvalidInstruction
+                }
+            }
+            0xA000 => CpuInstruction::SetIndexNNN(self.make_NNN(raw)),
+            0xB000 => CpuInstruction::JmpOffsetNNN(self.make_NNN(raw)),
+            0xC000 => CpuInstruction::RandomXNN(self.make_X(raw), self.make_NN(raw)),
+            0xD000 => CpuInstruction::DisplayXYN(self.make_X(raw), self.make_Y(raw), self.make_N(raw)),
             0xE000 => self.decode_E(raw),
             0xF000 => self.decode_F(raw),
             _ => CpuInstruction::InvalidInstruction,
