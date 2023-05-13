@@ -123,7 +123,6 @@ impl Cpu {
             CpuInst::SubReturn => {
                 self.program_counter = memory.pop_stack().expect("Error: Cannot from pop stack")
             }
-            CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
             CpuInst::SkipIfEqXNN(x, nn) => {
                 if self.variable_registers[*x as usize] == *nn {
                     self.program_counter = interpreter.next_pc(self.program_counter);
@@ -186,19 +185,19 @@ impl Cpu {
                     self.set_flag_register(0);
                 }
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                    .wrapping_sub(self.variable_registers[*y as usize])
+                .wrapping_sub(self.variable_registers[*y as usize])
             }
             CpuInst::SubsFromRightXY(x, y) => {
                 if self.variable_registers[*y as usize]
-                    .checked_sub(self.variable_registers[*x as usize])
-                    .is_none()
+                .checked_sub(self.variable_registers[*x as usize])
+                .is_none()
                 {
                     self.set_flag_register(1);
                 } else {
                     self.set_flag_register(0);
                 }
                 self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
-                    .wrapping_sub(self.variable_registers[*x as usize])
+                .wrapping_sub(self.variable_registers[*x as usize])
             }
             CpuInst::ShiftLeftXY(x, y) => {
                 if !self.emulator_config.modern_shift() {
@@ -224,6 +223,7 @@ impl Cpu {
                     self.set_flag_register(0);
                 }
             }
+            CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
             CpuInst::JmpOffsetNNN(_) => {}
             CpuInst::RandomXNN(_, _) => {}
             CpuInst::DisplayXYN(x, y, n) => display.display(
