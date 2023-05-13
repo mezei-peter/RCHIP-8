@@ -1,3 +1,5 @@
+use super::memory::PROGRAM_ADDRESS;
+
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
 pub struct Cpu {
@@ -17,5 +19,20 @@ impl Cpu {
             delay_timer: 0,
             sound_timer: 0,
         }
+    }
+
+    pub fn point_pc_to_program(&mut self) {
+        self.program_counter = PROGRAM_ADDRESS as u16;
+    }
+
+    pub fn get_pc(&self) -> u16 {
+        self.program_counter
+    }
+
+    pub fn set_pc(&mut self, address: u16, max_address: u16) {
+        if address > max_address {
+            return;
+        } 
+        self.program_counter = address
     }
 }

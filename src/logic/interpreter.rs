@@ -1,3 +1,5 @@
+use crate::guestsystem::components::{cpu::Cpu, memory::Memory};
+
 pub const FONT_SIZE: usize = 5;
 pub const ALL_FONT_COUNT: usize = 16;
 
@@ -28,5 +30,15 @@ impl Interpreter {
             0xF0, 0x80, 0xF0, 0x80, 0xF0, //E
             0xF0, 0x80, 0xF0, 0x80, 0x80, //F
         ]
+    }
+
+    pub fn fetch(&self, memory: &Memory, address: u16) -> u16 {
+        let byte_1: u8 = memory.at_address(address);
+        let byte_2: u8 = memory.at_address(address + 1);
+        ((byte_1 as u16) << 8) | byte_2 as u16
+    }
+
+    pub fn next_pc(&self, current_address: u16) -> u16 {
+        current_address + 2
     }
 }
