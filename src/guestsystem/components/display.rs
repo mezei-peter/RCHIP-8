@@ -43,9 +43,13 @@ impl<'a> DisplayScreen<'a> {
     }
 
     pub fn clear_screen(&mut self) {
-        self.pixels.iter_mut().for_each(|col| col.fill(false));
+        println!("CLEAR SCREEN");
+        for mut col in self.pixels {
+            col.fill(false);
+        }
         self.canvas.set_draw_color(COLOR_OFF);
         self.canvas.clear();
+        self.wait_for_refresh();
         self.canvas.present();
     }
 
@@ -81,9 +85,9 @@ impl<'a> DisplayScreen<'a> {
     fn draw_pixel(&mut self, x: u8, y: u8) {
         self.pixels[x as usize][y as usize] = true;
         self.canvas.set_draw_color(COLOR_ON);
-        let x_canv: i32 = (x as i32) * (SIZE_MULTIPLIER as i32);
-        let y_canv: i32 = (y as i32) * (SIZE_MULTIPLIER as i32);
-        let px_size: u32 = SIZE_MULTIPLIER as u32;
+        let x_canv: i32 = (x as i32) * (SIZE_MULTIPLIER as i32) + 1;
+        let y_canv: i32 = (y as i32) * (SIZE_MULTIPLIER as i32) + 1;
+        let px_size: u32 = SIZE_MULTIPLIER as u32 - 2;
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while drawing pixel on display.");
