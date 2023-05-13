@@ -32,10 +32,9 @@ pub fn main() {
     if args_service.find_config_arg(&args) {
         emulator_config = args_service.prompt_config();
     }
-    dbg!(emulator_config);
 
     let sdl_context: Sdl = sdl2::init().unwrap();
-    let mut guest_system: GuestSystem = GuestSystem::new(Memory::new(), Cpu::new(), &sdl_context);
+    let mut guest_system: GuestSystem = GuestSystem::new(Memory::new(), Cpu::new(emulator_config), &sdl_context);
     let interpreter: Interpreter = Interpreter::new();
 
     match args_service.read_rom(&path) {

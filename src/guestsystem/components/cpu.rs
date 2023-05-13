@@ -1,6 +1,6 @@
 use sdl2::EventPump;
 
-use crate::logic::interpreter::{self, Interpreter};
+use crate::{logic::interpreter::{self, Interpreter}, config::EmulatorConfig};
 
 use super::{
     display::DisplayScreen,
@@ -56,16 +56,18 @@ pub struct Cpu {
     variable_registers: [u8; VARIABLE_REGISTER_COUNT],
     delay_timer: u8,
     sound_timer: u8,
+    emulator_config: EmulatorConfig,
 }
 
 impl Cpu {
-    pub fn new() -> Cpu {
+    pub fn new(emulator_config: EmulatorConfig) -> Cpu {
         Cpu {
             program_counter: 0,
             index_register: 0,
             variable_registers: [0; VARIABLE_REGISTER_COUNT],
             delay_timer: 0,
             sound_timer: 0,
+            emulator_config,
         }
     }
 
