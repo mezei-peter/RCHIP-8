@@ -1,4 +1,6 @@
-use super::memory::PROGRAM_ADDRESS;
+use crate::logic::interpreter::Interpreter;
+
+use super::memory::{Memory, PROGRAM_ADDRESS};
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
@@ -32,7 +34,16 @@ impl Cpu {
     pub fn set_pc(&mut self, address: u16, max_address: u16) {
         if address > max_address {
             return;
-        } 
+        }
         self.program_counter = address
+    }
+
+    pub fn fetch(&mut self, memory: &Memory, interpreter: &Interpreter) -> u16 {
+        let instruction: u16 = interpreter.fetch(memory, self.program_counter);
+        self.set_pc(
+            interpreter.next_pc(self.program_counter),
+            memory.get_heap_size() as u16 - 1,
+        );
+        instruction
     }
 }

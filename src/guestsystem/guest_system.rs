@@ -34,7 +34,7 @@ impl<'a> GuestSystem<'a> {
 
         let mut event_pump = self.sdl_ctx.event_pump().unwrap();
         'running: loop {
-            let insctruction: u16 = self.fetch(&interpreter);
+            let insctruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
             for event in event_pump.poll_iter() {
                 match event {
                     Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
@@ -60,15 +60,5 @@ impl<'a> GuestSystem<'a> {
             }
             _ => {}
         }
-    }
-
-    fn fetch(&mut self, interpreter: &Interpreter) -> u16 {
-        let current_pc_address = self.cpu.get_pc();
-        let instruction: u16 = interpreter.fetch(&self.memory, current_pc_address);
-        self.cpu.set_pc(
-            interpreter.next_pc(current_pc_address),
-            self.memory.get_heap_size() as u16 - 1,
-        );
-        instruction
     }
 }
