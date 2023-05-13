@@ -143,7 +143,10 @@ impl Cpu {
                 }
             }
             CpuInst::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
-            CpuInst::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
+            CpuInst::AddXNN(x, nn) => {
+                self.variable_registers[*x as usize] =
+                    self.variable_registers[*x as usize].wrapping_add(*nn)
+            }
             CpuInst::SetXY(_, _) => {}
             CpuInst::BitOrXY(_, _) => {}
             CpuInst::BitAndXY(_, _) => {}
