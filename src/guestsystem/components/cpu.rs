@@ -111,11 +111,29 @@ impl Cpu {
         event_pump: &mut EventPump,
     ) {
         match instruction {
+            CpuInstruction::ExecMlrNNN(_) => {},
             CpuInstruction::Cls => display.clear_screen(),
             CpuInstruction::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
+            CpuInstruction::SubRoutineNNN(_) => {},
+            CpuInstruction::SubReturn => {},
+            CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
+            CpuInstruction::SkipIfEqXNN(_, _) => {},
+            CpuInstruction::SkipIfNotEqXNN(_, _) => {},
             CpuInstruction::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
             CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
-            CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
+            CpuInstruction::SkipIfEqXY(_, _) => {},
+            CpuInstruction::SkipIfNotEqXY(_, _) => {},
+            CpuInstruction::SetXY(_, _) => {},
+            CpuInstruction::BitOrXY(_, _) => {},
+            CpuInstruction::BitAndXY(_, _) => {},
+            CpuInstruction::BitXorXY(_, _) => {},
+            CpuInstruction::AddXY(_, _) => {},
+            CpuInstruction::SubsFromLeftXY(_, _) => {},
+            CpuInstruction::SubsFromRightXY(_, _) => {},
+            CpuInstruction::ShiftLeftXY(_, _) =>{},
+            CpuInstruction::ShiftRightXY(_, _) => {},
+            CpuInstruction::JmpOffsetNNN(_) => {},
+            CpuInstruction::RandomXNN(_, _) => {},
             CpuInstruction::DisplayXYN(x, y, n) => {
                 display.display(
                     self.variable_registers[*x as usize],
@@ -124,7 +142,18 @@ impl Cpu {
                     self,
                 )
             }
-            _ => {}
+            CpuInstruction::SkipIfKeyX(_) => {},
+            CpuInstruction::SkipIfNotKeyX(_) => {},
+            CpuInstruction::SetRegToDelayX(_) => {},
+            CpuInstruction::SetDelayX(_) => {},
+            CpuInstruction::SetSoundX(_) => {},
+            CpuInstruction::AddToIndexX(_) => {},
+            CpuInstruction::WaitForKeyX(_) => {},
+            CpuInstruction::SetIndexToFontX(_) => {},
+            CpuInstruction::DecimalConversionX(_) => {},
+            CpuInstruction::StoreInMemoryX(_) => {},
+            CpuInstruction::LoadFromMemoryX(_) => {},
+            CpuInstruction::InvalidInstruction => {},
         }
     }
 }
