@@ -1,7 +1,7 @@
 use crate::logic::interpreter::{ALL_FONT_COUNT, FONT_SIZE};
 
 const FOUR_KIBI: usize = 4096;
-const PROGRAM_ADDRESS: usize = 0x200;
+pub const PROGRAM_ADDRESS: usize = 0x200;
 const FONTS_ADDRESS: usize = 0x050;
 
 #[derive(Debug)]
@@ -34,5 +34,13 @@ impl Memory {
             self.heap[address + i] = font_byte;
             i += 1;
         }
+    }
+
+    pub fn at_address(&self, address: u16) -> u8 {
+        self.heap[address as usize]
+    }
+
+    pub fn get_heap_size(&self) -> usize {
+        self.heap.len()
     }
 }
