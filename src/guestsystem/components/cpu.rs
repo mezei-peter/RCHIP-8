@@ -198,8 +198,14 @@ impl Cpu {
                 self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
                     .wrapping_sub(self.variable_registers[*x as usize])
             }
-            CpuInst::ShiftLeftXY(_, _) => {}
-            CpuInst::ShiftRightXY(_, _) => {}
+            CpuInst::ShiftLeftXY(x, _y) => {
+                todo!();
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize] << 1;
+            }
+            CpuInst::ShiftRightXY(x, _y) => {
+                todo!();
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize] >> 1;
+            }
             CpuInst::JmpOffsetNNN(_) => {}
             CpuInst::RandomXNN(_, _) => {}
             CpuInst::DisplayXYN(x, y, n) => display.display(

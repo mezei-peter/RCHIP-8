@@ -1,3 +1,4 @@
+pub mod config;
 mod logic {
     pub mod args_service;
     pub mod interpreter;
