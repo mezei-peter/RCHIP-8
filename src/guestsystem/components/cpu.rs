@@ -1,6 +1,9 @@
 use sdl2::EventPump;
 
-use crate::{logic::interpreter::{self, Interpreter}, config::EmulatorConfig};
+use crate::{
+    config::EmulatorConfig,
+    logic::interpreter::{self, Interpreter},
+};
 
 use super::{
     display::DisplayScreen,
@@ -185,19 +188,19 @@ impl Cpu {
                     self.set_flag_register(0);
                 }
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                .wrapping_sub(self.variable_registers[*y as usize])
+                    .wrapping_sub(self.variable_registers[*y as usize])
             }
             CpuInst::SubsFromRightXY(x, y) => {
                 if self.variable_registers[*y as usize]
-                .checked_sub(self.variable_registers[*x as usize])
-                .is_none()
+                    .checked_sub(self.variable_registers[*x as usize])
+                    .is_none()
                 {
                     self.set_flag_register(1);
                 } else {
                     self.set_flag_register(0);
                 }
                 self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
-                .wrapping_sub(self.variable_registers[*x as usize])
+                    .wrapping_sub(self.variable_registers[*x as usize])
             }
             CpuInst::ShiftLeftXY(x, y) => {
                 if !self.emulator_config.modern_shift() {
@@ -224,7 +227,16 @@ impl Cpu {
                 }
             }
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
-            CpuInst::JmpOffsetNNN(_) => {}
+            CpuInst::JmpOffsetNNN(nnn) => {
+                if self.emulator_config.modern_jump_offset() {
+                    let x: u8 = interpreter.make_x(*nnn);
+                    let address = *nnn + self.variable_registers[x as usize] as u16;
+                    self.program_counter = interpreter.prev_pc(address);
+                } else {
+                    let address = *nnn + self.variable_registers[0] as u16;
+                    self.program_counter = interpreter.prev_pc(address);
+                }
+            }
             CpuInst::RandomXNN(_, _) => {}
             CpuInst::DisplayXYN(x, y, n) => display.display(
                 self.variable_registers[*x as usize],

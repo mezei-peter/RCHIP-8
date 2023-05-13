@@ -131,7 +131,7 @@ impl Interpreter {
         }
     }
 
-    fn make_x(&self, raw: u16) -> u8 {
+    pub fn make_x(&self, raw: u16) -> u8 {
         ((raw & 0x0F00) >> 8) as u8
     }
 
