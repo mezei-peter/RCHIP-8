@@ -6,7 +6,12 @@ use sdl2::{
 
 use crate::logic::interpreter::Interpreter;
 
-use super::components::{cpu::{Cpu, CpuInstruction}, display::DisplayScreen, keypad::Keypad, memory::Memory};
+use super::components::{
+    cpu::{Cpu, CpuInstruction},
+    display::DisplayScreen,
+    keypad::Keypad,
+    memory::Memory,
+};
 
 pub struct GuestSystem<'a> {
     memory: Memory,
@@ -36,12 +41,20 @@ impl<'a> GuestSystem<'a> {
         'running: loop {
             let raw_instruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
             let instruction: CpuInstruction = self.cpu.decode(raw_instruction, interpreter);
-            println!("INSTRUCTION: {:4X}", raw_instruction);
-            dbg!(instruction);
+            self.cpu.execute(
+                &instruction,
+                &mut self.memory,
+                &mut self.display,
+                &self.keypad,
+                &mut event_pump,
+            );
             for event in event_pump.poll_iter() {
                 match event {
-                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
-                    Event::Quit { .. } => break 'running,
+                    Event::KeyDown {
+                        keycode: Some(Keycode::Escape),
+                        ..
+                    }
+                    | Event::Quit { .. } => break 'running,
                     _ => self.handle_keys(&event),
                 }
             }

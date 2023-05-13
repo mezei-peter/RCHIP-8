@@ -1,6 +1,12 @@
+use sdl2::EventPump;
+
 use crate::logic::interpreter::Interpreter;
 
-use super::memory::{Memory, PROGRAM_ADDRESS};
+use super::{
+    display::DisplayScreen,
+    keypad::Keypad,
+    memory::{Memory, PROGRAM_ADDRESS},
+};
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
@@ -89,5 +95,23 @@ impl Cpu {
 
     pub fn decode(&self, raw_instruction: u16, interpreter: &Interpreter) -> CpuInstruction {
         interpreter.decode(raw_instruction)
+    }
+
+    pub fn execute(
+        &mut self,
+        instruction: &CpuInstruction,
+        memory: &mut Memory,
+        display: &mut DisplayScreen,
+        keypad: &Keypad,
+        event_pump: &mut EventPump,
+    ) {
+        match instruction {
+            CpuInstruction::Cls => self.clear_screen(display),
+            _ => {}
+        }
+    }
+
+    fn clear_screen(&self, display: &mut DisplayScreen) {
+        display.clear_screen();
     }
 }
