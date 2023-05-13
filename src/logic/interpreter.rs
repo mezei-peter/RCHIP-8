@@ -1,4 +1,4 @@
-use crate::guestsystem::components::{cpu::Cpu, memory::Memory};
+use crate::guestsystem::components::{cpu::{Cpu, CpuInstruction}, memory::Memory};
 
 pub const FONT_SIZE: usize = 5;
 pub const ALL_FONT_COUNT: usize = 16;
@@ -40,5 +40,9 @@ impl Interpreter {
 
     pub fn next_pc(&self, current_address: u16) -> u16 {
         current_address + 2
+    }
+
+    pub fn decode(&self, raw_instruction: u16) -> CpuInstruction {
+        todo!();
     }
 }

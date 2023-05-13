@@ -4,6 +4,44 @@ use super::memory::{Memory, PROGRAM_ADDRESS};
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
 
+pub enum CpuInstruction {
+    ExecMlrNNN(u16),
+    Cls,
+    JmpNNN(u16),
+    SubRoutineNNN(u16),
+    SubReturn,
+    SkipIfEqXNN(u8, u8),
+    SkipIfNotEqXNN(u8, u8),
+    SkipIfEqXY(u8, u8),
+    SkipIfNotEqXY(u8, u8),
+    SetXNN(u8, u8),
+    AddXNN(u8, u8),
+    SetXY(u8, u8),
+    BitOrXY(u8, u8),
+    BitAndXY(u8, u8),
+    BitXorXY(u8, u8),
+    AddXY(u8, u8),
+    SubsLeftXY(u8, u8),
+    SubsRightXY(u8, u8),
+    ShiftLeftXY(u8, u8),
+    ShiftRightXY(u8, u8),
+    SetIndexNNN(u16),
+    JmpOffsetNNN(u16),
+    RandomXNN(u8, u8),
+    DisplayXYN(u8, u8, u8),
+    SkipIfKeyX(u8),
+    SkipIfNotKeyX(u8),
+    SetRegToDelayX(u8),
+    SetDelayX(u8),
+    SetSoundX(u8),
+    AddToIndexX(u8),
+    WaitForKeyX(u8),
+    SetIndexToFontX(u8),
+    DecimalConversionX(u8),
+    StoreMemoryX(u8),
+    LoadMemoryX(u8),
+}
+
 pub struct Cpu {
     program_counter: u16,
     index_register: u16,
@@ -45,5 +83,9 @@ impl Cpu {
             memory.get_heap_size() as u16 - 1,
         );
         instruction
+    }
+
+    pub fn decode(&self, raw_instruction: u16, interpreter: &Interpreter) -> CpuInstruction {
+        interpreter.decode(raw_instruction)
     }
 }
