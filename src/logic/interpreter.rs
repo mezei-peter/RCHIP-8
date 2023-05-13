@@ -90,7 +90,18 @@ impl Interpreter {
     }
 
     fn decode_8(&self, raw: u16) -> CpuInstruction {
-        todo!()
+        match raw & 0x000F {
+            0x0000 => CpuInstruction::SetXY(self.make_x(raw), self.make_y(raw)),
+            0x0001 => CpuInstruction::BitOrXY(self.make_x(raw), self.make_y(raw)),
+            0x0002 => CpuInstruction::BitAndXY(self.make_x(raw), self.make_y(raw)),
+            0x0003 => CpuInstruction::BitXorXY(self.make_x(raw), self.make_y(raw)),
+            0x0004 => CpuInstruction::AddXY(self.make_x(raw), self.make_y(raw)),
+            0x0005 => CpuInstruction::SubsFromLeftXY(self.make_x(raw), self.make_y(raw)),
+            0x0006 => CpuInstruction::ShiftRightXY(self.make_x(raw), self.make_y(raw)),
+            0x0007 => CpuInstruction::SubsFromRightXY(self.make_x(raw), self.make_y(raw)),
+            0x000E => CpuInstruction::ShiftLeftXY(self.make_x(raw), self.make_y(raw)),
+            _ => CpuInstruction::InvalidInstruction
+        }
     }
 
     fn decode_e(&self, raw: u16) -> CpuInstruction {
