@@ -73,6 +73,10 @@ impl Cpu {
         self.program_counter = PROGRAM_ADDRESS as u16;
     }
 
+    pub fn set_flag_register(&mut self, arg: u8) {
+        self.variable_registers[VARIABLE_REGISTER_COUNT - 1] = arg;
+    }
+
     pub fn get_pc(&self) -> u16 {
         self.program_counter
     }
@@ -112,6 +116,14 @@ impl Cpu {
             CpuInstruction::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
             CpuInstruction::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
             CpuInstruction::SetIndexNNN(nnn) => self.index_register = *nnn,
+            CpuInstruction::DisplayXYN(x, y, n) => {
+                display.display(
+                    self.variable_registers[*x as usize],
+                    self.variable_registers[*y as usize],
+                    memory.get_heap_slice(self.index_register, *n as u16),
+                    self,
+                )
+            }
             _ => {}
         }
     }
