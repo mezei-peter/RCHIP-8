@@ -122,12 +122,28 @@ impl Cpu {
                 self.program_counter = memory.pop_stack().expect("Error: Cannot from pop stack")
             }
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
-            CpuInst::SkipIfEqXNN(_, _) => {}
-            CpuInst::SkipIfNotEqXNN(_, _) => {}
+            CpuInst::SkipIfEqXNN(x, nn) => {
+                if self.variable_registers[*x as usize] == *nn {
+                    self.program_counter = interpreter.next_pc(self.program_counter);
+                }
+            }
+            CpuInst::SkipIfNotEqXNN(x, nn) => {
+                if self.variable_registers[*x as usize] != *nn {
+                    self.program_counter = interpreter.next_pc(self.program_counter);
+                }
+            }
+            CpuInst::SkipIfEqXY(x, y) => {
+                if self.variable_registers[*x as usize] == self.variable_registers[*y as usize] {
+                    self.program_counter = interpreter.next_pc(self.program_counter);
+                }
+            }
+            CpuInst::SkipIfNotEqXY(x, y) => {
+                if self.variable_registers[*x as usize] != self.variable_registers[*y as usize] {
+                    self.program_counter = interpreter.next_pc(self.program_counter);
+                }
+            }
             CpuInst::SetXNN(x, nn) => self.variable_registers[*x as usize] = *nn,
             CpuInst::AddXNN(x, nn) => self.variable_registers[*x as usize] += *nn,
-            CpuInst::SkipIfEqXY(_, _) => {}
-            CpuInst::SkipIfNotEqXY(_, _) => {}
             CpuInst::SetXY(_, _) => {}
             CpuInst::BitOrXY(_, _) => {}
             CpuInst::BitAndXY(_, _) => {}
