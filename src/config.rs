@@ -25,4 +25,16 @@ impl EmulatorConfig {
             modern_store_and_load: true,
         }
     }
+
+    pub fn modern_shift(&self) -> bool {
+        self.modern_shift
+    }
+
+    pub fn modern_jump_offset(&self) -> bool {
+        self.modern_jump_offset
+    }
+
+    pub fn modern_store_and_load(&self) -> bool {
+        self.modern_store_and_load
+    }
 }

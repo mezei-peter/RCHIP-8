@@ -200,13 +200,29 @@ impl Cpu {
                 self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
                     .wrapping_sub(self.variable_registers[*x as usize])
             }
-            CpuInst::ShiftLeftXY(x, _y) => {
-                todo!();
+            CpuInst::ShiftLeftXY(x, y) => {
+                if !self.emulator_config.modern_shift() {
+                    self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
+                }
+                let msb: bool = self.variable_registers[*x as usize] & 0x80 == 0x80;
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize] << 1;
+                if msb {
+                    self.set_flag_register(1);
+                } else {
+                    self.set_flag_register(0);
+                }
             }
-            CpuInst::ShiftRightXY(x, _y) => {
-                todo!();
+            CpuInst::ShiftRightXY(x, y) => {
+                if !self.emulator_config.modern_shift() {
+                    self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
+                }
+                let lsb: bool = self.variable_registers[*x as usize] & 1 == 1;
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize] >> 1;
+                if lsb {
+                    self.set_flag_register(1);
+                } else {
+                    self.set_flag_register(0);
+                }
             }
             CpuInst::JmpOffsetNNN(_) => {}
             CpuInst::RandomXNN(_, _) => {}
