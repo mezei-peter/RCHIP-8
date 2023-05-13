@@ -147,13 +147,57 @@ impl Cpu {
                 self.variable_registers[*x as usize] =
                     self.variable_registers[*x as usize].wrapping_add(*nn)
             }
-            CpuInst::SetXY(_, _) => {}
-            CpuInst::BitOrXY(_, _) => {}
-            CpuInst::BitAndXY(_, _) => {}
-            CpuInst::BitXorXY(_, _) => {}
-            CpuInst::AddXY(_, _) => {}
-            CpuInst::SubsFromLeftXY(_, _) => {}
-            CpuInst::SubsFromRightXY(_, _) => {}
+            CpuInst::SetXY(x, y) => {
+                self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
+            }
+            CpuInst::BitOrXY(x, y) => {
+                self.variable_registers[*x as usize] =
+                    self.variable_registers[*x as usize] | self.variable_registers[*y as usize]
+            }
+            CpuInst::BitAndXY(x, y) => {
+                self.variable_registers[*x as usize] =
+                    self.variable_registers[*x as usize] & self.variable_registers[*y as usize]
+            }
+            CpuInst::BitXorXY(x, y) => {
+                self.variable_registers[*x as usize] =
+                    self.variable_registers[*x as usize] ^ self.variable_registers[*y as usize]
+            }
+            CpuInst::AddXY(x, y) => {
+                if self.variable_registers[*x as usize]
+                    .checked_add(self.variable_registers[*y as usize])
+                    .is_none()
+                {
+                    self.set_flag_register(1);
+                } else {
+                    self.set_flag_register(0);
+                }
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
+                    .wrapping_add(self.variable_registers[*y as usize])
+            }
+            CpuInst::SubsFromLeftXY(x, y) => {
+                if self.variable_registers[*x as usize]
+                    .checked_sub(self.variable_registers[*y as usize])
+                    .is_none()
+                {
+                    self.set_flag_register(1);
+                } else {
+                    self.set_flag_register(0);
+                }
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
+                    .wrapping_sub(self.variable_registers[*y as usize])
+            }
+            CpuInst::SubsFromRightXY(x, y) => {
+                if self.variable_registers[*y as usize]
+                    .checked_sub(self.variable_registers[*x as usize])
+                    .is_none()
+                {
+                    self.set_flag_register(1);
+                } else {
+                    self.set_flag_register(0);
+                }
+                self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
+                    .wrapping_sub(self.variable_registers[*x as usize])
+            }
             CpuInst::ShiftLeftXY(_, _) => {}
             CpuInst::ShiftRightXY(_, _) => {}
             CpuInst::JmpOffsetNNN(_) => {}
