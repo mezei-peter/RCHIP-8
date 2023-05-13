@@ -40,6 +40,7 @@ pub enum CpuInstruction {
     DecimalConversionX(u8),
     StoreMemoryX(u8),
     LoadMemoryX(u8),
+    InvalidInstruction,
 }
 
 pub struct Cpu {
