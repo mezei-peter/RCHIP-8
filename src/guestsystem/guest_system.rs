@@ -63,5 +63,9 @@ impl<'a> GuestSystem<'a> {
         if let Event::KeyDown { scancode, .. } = event {
             self.keypad.set_current_key(*scancode);
         }
+
+        if let Event::KeyUp { scancode, .. } = event {
+            self.keypad.set_released_key(*scancode);
+        }
     }
 }

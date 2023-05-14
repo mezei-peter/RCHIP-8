@@ -295,6 +295,11 @@ impl Cpu {
             self.program_counter = interpreter.prev_pc(self.program_counter);
             return;
         }
+        let same_key_released: bool = keypad.same_released_key_val(key_val.unwrap());
+        if !same_key_released {
+            self.program_counter = interpreter.prev_pc(self.program_counter);
+            return;
+        }
         self.variable_registers[x] = key_val.unwrap();
     }
 

@@ -3,11 +3,16 @@ use sdl2::{keyboard::Scancode, Sdl};
 pub struct Keypad<'a> {
     context: &'a Sdl,
     current_key: Option<Scancode>,
+    released_key: Option<Scancode>,
 }
 
 impl<'a> Keypad<'a> {
     pub fn new(context: &Sdl) -> Keypad {
-        Keypad { context, current_key: None }
+        Keypad {
+            context,
+            current_key: None,
+            released_key: None,
+        }
     }
 
     //  QWERTY  EMULATED
@@ -72,11 +77,28 @@ impl<'a> Keypad<'a> {
                 }
                 current_val.unwrap() == key_val
             }
-            None => false
+            None => false,
         }
     }
 
     pub fn current_key(&self) -> Option<Scancode> {
         self.current_key
+    }
+
+    pub fn set_released_key(&mut self, released_key: Option<Scancode>) {
+        self.released_key = released_key;
+    }
+
+    pub fn same_released_key_val(&self, key_val: u8) -> bool {
+        match self.released_key {
+            Some(scancode) => {
+                let current_val: Option<u8> = self.scancode_to_byte(&scancode);
+                if current_val.is_none() {
+                    return false;
+                }
+                current_val.unwrap() == key_val
+            }
+            None => false,
+        }
     }
 }
