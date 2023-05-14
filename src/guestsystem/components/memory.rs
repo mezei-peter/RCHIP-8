@@ -30,8 +30,8 @@ impl Memory {
         let length: usize = buffer.len();
         let mut i: usize = 0;
         while i < length {
-            let font_byte: u8 = buffer[i];
-            self.heap[address + i] = font_byte;
+            let byte: u8 = buffer[i];
+            self.heap[address + i] = byte;
             i += 1;
         }
     }
@@ -54,5 +54,14 @@ impl Memory {
 
     pub fn pop_stack(&mut self) -> Option<u16> {
         self.stack.pop()
+    }
+
+    pub fn get_font(&self, font_val: u8) -> u16 {
+        let addr = FONTS_ADDRESS + (font_val as usize) * FONT_SIZE;
+        addr as u16
+    }
+
+    pub fn set_heap(&mut self, address: u16, byte: u8) {
+        self.heap[address as usize] = byte;
     }
 }

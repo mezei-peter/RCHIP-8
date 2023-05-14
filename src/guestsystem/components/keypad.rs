@@ -2,11 +2,21 @@ use sdl2::{keyboard::Scancode, Sdl};
 
 pub struct Keypad<'a> {
     context: &'a Sdl,
+    current_key: Option<Scancode>,
+    released_key: Option<Scancode>,
+    last_key_val: u8,
+    last_released_key_val: u8,
 }
 
 impl<'a> Keypad<'a> {
     pub fn new(context: &Sdl) -> Keypad {
-        Keypad { context }
+        Keypad {
+            context,
+            current_key: None,
+            released_key: None,
+            last_key_val: 0xff,
+            last_released_key_val: 0xff,
+        }
     }
 
     //  QWERTY  EMULATED
@@ -33,6 +43,76 @@ impl<'a> Keypad<'a> {
             Scancode::C => Some(0xB),
             Scancode::V => Some(0xF),
             _ => None,
+        }
+    }
+
+    pub fn byte_to_scancode(&self, key_val: u8) -> Option<Scancode> {
+        match key_val {
+            0x0 => Some(Scancode::X),
+            0x1 => Some(Scancode::Num1),
+            0x2 => Some(Scancode::Num2),
+            0x3 => Some(Scancode::Num3),
+            0x4 => Some(Scancode::Q),
+            0x5 => Some(Scancode::W),
+            0x6 => Some(Scancode::E),
+            0x7 => Some(Scancode::A),
+            0x8 => Some(Scancode::S),
+            0x9 => Some(Scancode::D),
+            0xA => Some(Scancode::Z),
+            0xB => Some(Scancode::C),
+            0xC => Some(Scancode::Num4),
+            0xD => Some(Scancode::R),
+            0xE => Some(Scancode::F),
+            0xF => Some(Scancode::V),
+            _ => None,
+        }
+    }
+
+    pub fn set_current_key(&mut self, scancode: Option<Scancode>) {
+        if let Some(key) = scancode {
+            if let Some(val) = self.scancode_to_byte(&key) {
+                self.last_key_val = val;
+            }
+        }
+        self.current_key = scancode
+    }
+
+    pub fn same_current_key_val(&self, key_val: u8) -> bool {
+        match self.current_key {
+            Some(scancode) => {
+                let current_val: Option<u8> = self.scancode_to_byte(&scancode);
+                if current_val.is_none() {
+                    return false;
+                }
+                current_val.unwrap() == key_val
+            }
+            None => false,
+        }
+    }
+
+    pub fn current_key(&self) -> Option<Scancode> {
+        self.current_key
+    }
+
+    pub fn set_released_key(&mut self, released_key: Option<Scancode>) {
+        if let Some(key) = released_key {
+            if let Some(val) = self.scancode_to_byte(&key) {
+                self.last_released_key_val = val;
+            }
+        }
+        self.released_key = released_key;
+    }
+
+    pub fn same_released_key_val(&self, key_val: u8) -> bool {
+        match self.released_key {
+            Some(scancode) => {
+                let current_val: Option<u8> = self.scancode_to_byte(&scancode);
+                if current_val.is_none() {
+                    return false;
+                }
+                current_val.unwrap() == key_val
+            }
+            None => false,
         }
     }
 }

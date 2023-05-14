@@ -31,7 +31,6 @@ impl ArgsService {
     pub fn find_config_arg(&self, args: &[String]) -> bool {
         if args.len() >= 3 {
             if args[2] == "--config" {
-                println!("CONFIG");
                 return true;
             }
         }
@@ -43,13 +42,15 @@ impl ArgsService {
         println!();
         println!("  Would you like to allow: ");
         let modern_shift: bool =
-            self.prompt_config_option("  -> modern bitwise shift behaviour? (Y/N)");
+            self.prompt_config_option("  -> modern bitwise shift behaviour? (Y/N) - default: Y");
         let modern_jump_offset: bool =
-            self.prompt_config_option("  -> modern jump offset instruction? (Y/N)");
+            self.prompt_config_option("  -> modern jump offset instruction? (Y/N) - default: N");
         let modern_store_and_load: bool = self.prompt_config_option(
-            "  -> modern method of storing data in/loading data from memory? (Y/N)",
+            "  -> modern method of storing data in/loading data from memory? (Y/N) - default: Y",
         );
-        CpuConfig::new(modern_shift, modern_jump_offset, modern_store_and_load)
+        let modern_index_addition: bool =
+            self.prompt_config_option("  -> modern addition to index register? (Y/N) default Y");
+        CpuConfig::new(modern_shift, modern_jump_offset, modern_store_and_load, modern_index_addition)
     }
 
     fn read_line(&self) -> String {

@@ -35,6 +35,7 @@ impl<'a> GuestSystem<'a> {
 
         let mut event_pump = self.sdl_ctx.event_pump().unwrap();
         'running: loop {
+            self.cpu.operate_timers();
             let raw_instruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
             let instruction: CpuInst = self.cpu.decode(raw_instruction, interpreter);
             self.cpu.execute(
@@ -59,19 +60,12 @@ impl<'a> GuestSystem<'a> {
     }
 
     fn handle_keys(&mut self, event: &Event) {
-        match event {
-            Event::KeyDown {
-                scancode: Some(scode),
-                ..
-            } => {
-                let byte_val = self.keypad.scancode_to_byte(scode);
-                if byte_val.is_none() {
-                    return;
-                } else {
-                    println!("VALID KEY!");
-                }
-            }
-            _ => {}
+        if let Event::KeyDown { scancode, .. } = event {
+            self.keypad.set_current_key(*scancode);
+        }
+
+        if let Event::KeyUp { scancode, .. } = event {
+            self.keypad.set_released_key(*scancode);
         }
     }
 }
