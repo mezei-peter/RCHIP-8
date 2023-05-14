@@ -167,30 +167,8 @@ impl Cpu {
             CpuInst::AddXY(x, y) => self.add_regs(*x as usize, *y as usize),
             CpuInst::SubtFromLeftXY(x, y) => self.subt_regs_left(*x as usize, *y as usize),
             CpuInst::SubtFromRightXY(x, y) => self.subt_regs_right(*x as usize, *y as usize),
-            CpuInst::ShiftLeftXY(x, y) => {
-                if !self.config.modern_shift() {
-                    self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
-                }
-                let msb: bool = self.variable_registers[*x as usize] & 0x80 == 0x80;
-                self.variable_registers[*x as usize] = self.variable_registers[*x as usize] << 1;
-                if msb {
-                    self.set_flag_register(1);
-                } else {
-                    self.set_flag_register(0);
-                }
-            }
-            CpuInst::ShiftRightXY(x, y) => {
-                if !self.config.modern_shift() {
-                    self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
-                }
-                let lsb: bool = self.variable_registers[*x as usize] & 1 == 1;
-                self.variable_registers[*x as usize] = self.variable_registers[*x as usize] >> 1;
-                if lsb {
-                    self.set_flag_register(1);
-                } else {
-                    self.set_flag_register(0);
-                }
-            }
+            CpuInst::ShiftLeftXY(x, y) => self.shift_left(*x as usize, *y as usize),
+            CpuInst::ShiftRightXY(x, y) => self.shift_right(*x as usize, *y as usize),
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
             CpuInst::JmpOffsetNNN(nnn) => {
                 if self.config.modern_jump_offset() {
@@ -228,6 +206,32 @@ impl Cpu {
             CpuInst::StoreInMemoryX(x) => self.store_x_regs(*x as usize + 1, memory),
             CpuInst::LoadFromMemoryX(x) => self.load_x_regs(*x as usize + 1, memory),
             CpuInst::InvalidInstruction => {}
+        }
+    }
+
+    fn shift_left(&mut self, x: usize, y: usize) {
+        if !self.config.modern_shift() {
+            self.variable_registers[x as usize] = self.variable_registers[y as usize];
+        }
+        let msb: bool = self.variable_registers[x as usize] & 0x80 == 0x80;
+        self.variable_registers[x as usize] = self.variable_registers[x as usize] << 1;
+        if msb {
+            self.set_flag_register(1);
+        } else {
+            self.set_flag_register(0);
+        }
+    }
+
+    fn shift_right(&mut self, x: usize, y: usize) {
+        if !self.config.modern_shift() {
+            self.variable_registers[x as usize] = self.variable_registers[y as usize];
+        }
+        let lsb: bool = self.variable_registers[x as usize] & 1 == 1;
+        self.variable_registers[x as usize] = self.variable_registers[x as usize] >> 1;
+        if lsb {
+            self.set_flag_register(1);
+        } else {
+            self.set_flag_register(0);
         }
     }
 
