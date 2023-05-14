@@ -3,7 +3,10 @@ use std::time::{Duration, Instant};
 use rand::Rng;
 use sdl2::{event::Event, keyboard::Scancode, EventPump};
 
-use crate::{config::CpuConfig, logic::interpreter::Interpreter};
+use crate::{
+    config::CpuConfig,
+    logic::interpreter::{self, Interpreter},
+};
 
 use super::{
     display::DisplayScreen,
@@ -100,10 +103,7 @@ impl Cpu {
 
     pub fn fetch(&mut self, memory: &Memory, interpreter: &Interpreter) -> u16 {
         let instruction: u16 = interpreter.fetch(memory, self.program_counter);
-        self.set_pc(
-            interpreter.next_pc(self.program_counter),
-            memory.get_heap_size() as u16 - 1,
-        );
+        self.program_counter = interpreter.next_pc(self.program_counter);
         instruction
     }
 
@@ -256,9 +256,7 @@ impl Cpu {
             CpuInst::SetDelayX(x) => self.delay_timer = self.variable_registers[*x as usize],
             CpuInst::SetSoundX(x) => self.sound_timer = self.variable_registers[*x as usize],
             CpuInst::AddToIndexX(x) => self.add_to_index(*x as usize),
-            CpuInst::WaitForKeyX(x) => {
-                self.wait_for_key(*x as usize, keypad, event_pump);
-            }
+            CpuInst::WaitForKeyX(x) => self.wait_for_key(*x as usize, keypad, interpreter),
             CpuInst::SetIndexToFontX(x) => self.set_index_to_font(*x as usize, memory),
             CpuInst::DecimalConversionX(x) => self.store_three_decimal_digits(*x as usize, memory),
             CpuInst::StoreInMemoryX(x) => self.store_x_regs(*x as usize + 1, memory),
@@ -286,21 +284,18 @@ impl Cpu {
         }
     }
 
-    fn wait_for_key(&mut self, x: usize, keypad: &Keypad, event_pump: &mut EventPump) {
-        for event in event_pump.poll_iter() {
-            if let Event::KeyDown { scancode, .. } = event {
-                if scancode.is_some() {
-                    let key_val = keypad.scancode_to_byte(&scancode.unwrap());
-                    if key_val.is_none() {
-                        self.program_counter = self.program_counter;
-                        return;
-                    }
-                    self.variable_registers[x] = key_val.unwrap();
-                } else {
-                    self.program_counter = self.program_counter;
-                }
-            }
+    fn wait_for_key(&mut self, x: usize, keypad: &Keypad, interpreter: &Interpreter) {
+        let current_key: Option<Scancode> = keypad.current_key();
+        if current_key.is_none() {
+            self.program_counter = interpreter.prev_pc(self.program_counter);
+            return;
         }
+        let key_val: Option<u8> = keypad.scancode_to_byte(&current_key.unwrap());
+        if key_val.is_none() {
+            self.program_counter = interpreter.prev_pc(self.program_counter);
+            return;
+        }
+        self.variable_registers[x] = key_val.unwrap();
     }
 
     fn add_to_index(&mut self, x: usize) {

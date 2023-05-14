@@ -75,4 +75,8 @@ impl<'a> Keypad<'a> {
             None => false
         }
     }
+
+    pub fn current_key(&self) -> Option<Scancode> {
+        self.current_key
+    }
 }
