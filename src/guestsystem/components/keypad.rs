@@ -2,12 +2,12 @@ use sdl2::{keyboard::Scancode, Sdl};
 
 pub struct Keypad<'a> {
     context: &'a Sdl,
-    last_key: Scancode,
+    current_key: Option<Scancode>,
 }
 
 impl<'a> Keypad<'a> {
     pub fn new(context: &Sdl) -> Keypad {
-        Keypad { context, last_key: Scancode::Return }
+        Keypad { context, current_key: None }
     }
 
     //  QWERTY  EMULATED
@@ -59,7 +59,7 @@ impl<'a> Keypad<'a> {
         }
     }
 
-    pub fn set_last_key(&mut self, scancode: Scancode) {
-        self.last_key = scancode
+    pub fn set_current_key(&mut self, scancode: Option<Scancode>) {
+        self.current_key = scancode
     }
 }

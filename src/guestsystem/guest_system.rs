@@ -60,8 +60,8 @@ impl<'a> GuestSystem<'a> {
     }
 
     fn handle_keys(&mut self, event: &Event) {
-        if let Event::KeyDown { scancode: Some(sc), .. } = event {
-            self.keypad.set_last_key(*sc);
+        if let Event::KeyDown { scancode, .. } = event {
+            self.keypad.set_current_key(*scancode);
         }
     }
 }

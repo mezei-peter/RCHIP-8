@@ -275,25 +275,41 @@ impl Cpu {
         event_pump: &mut EventPump,
         should_be_pressed: bool,
     ) {
-        let key_val: u8 = self.variable_registers[reg_index];
-        let key: Option<Scancode> = keypad.byte_to_scancode(key_val);
-        if key.is_some() {
+        let key_val: u8 = self.variable_registers[reg_index] & 0x0F;
+        /*if should_be_pressed {
             for event in event_pump.poll_iter() {
-                if let Event::KeyDown { scancode, .. } = event {
-                    if should_be_pressed {
-                        if scancode == key {
-                            self.program_counter = interpreter.next_pc(self.program_counter);
-                        }
-                    } else {
-                        if scancode != key {
+                dbg!(&event);
+                if let Event::KeyDown {
+                    scancode: Some(sc), ..
+                } = event
+                {
+                    let pressed_val: Option<u8> = keypad.scancode_to_byte(&sc);
+                    if pressed_val.is_some() {
+                        if pressed_val.unwrap() == key_val {
                             self.program_counter = interpreter.next_pc(self.program_counter);
                         }
                     }
                 }
             }
-        } else if !should_be_pressed {
-            self.program_counter = interpreter.next_pc(self.program_counter);
-        }
+        } else {
+            for event in event_pump.poll_iter() {
+                if let Event::KeyDown { scancode, .. } = event {
+                    if scancode.is_none() {
+                        self.program_counter = interpreter.next_pc(self.program_counter);
+                    } else {
+                        let sc: Scancode = scancode.unwrap();
+                        let pressed_val: Option<u8> = keypad.scancode_to_byte(&sc);
+                        if pressed_val.is_none() {
+                            self.program_counter = interpreter.next_pc(self.program_counter);
+                        } else {
+                            if pressed_val.unwrap() != key_val {
+                                self.program_counter = interpreter.next_pc(self.program_counter);
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
     }
 
     fn wait_for_key(&mut self, x: usize, keypad: &Keypad, event_pump: &mut EventPump) {
