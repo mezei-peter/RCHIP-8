@@ -124,22 +124,15 @@ impl Cpu {
             CpuInst::ExecMlrNNN(_) => {}
             CpuInst::Cls => display.clear_screen(),
             CpuInst::JmpNNN(nnn) => self.program_counter = *nnn,
-            CpuInst::SubRoutineNNN(nnn) => {
-                memory.push_stack(self.program_counter);
-                self.program_counter = *nnn
-            }
+            CpuInst::SubRoutineNNN(nnn) => self.enter_subroutine(*nnn, memory),
             CpuInst::SubRoutineReturn => {
                 self.program_counter = memory.pop_stack().expect("Error: Cannot pop from stack")
             }
             CpuInst::SkipIfEqXNN(x, nn) => {
-                if self.variable_registers[*x as usize] == *nn {
-                    self.program_counter = interpreter.next_pc(self.program_counter);
-                }
+                self.skip_instruction(*x as usize, *nn, true, interpreter)
             }
             CpuInst::SkipIfNotEqXNN(x, nn) => {
-                if self.variable_registers[*x as usize] != *nn {
-                    self.program_counter = interpreter.next_pc(self.program_counter);
-                }
+                self.skip_instruction(*x as usize, *nn, false, interpreter)
             }
             CpuInst::SkipIfEqXY(x, y) => {
                 if self.variable_registers[*x as usize] == self.variable_registers[*y as usize] {
@@ -314,15 +307,17 @@ impl Cpu {
     }
 
     pub fn operate_timers(&mut self) {
-        let elapsed: Duration = Instant::elapsed(&self.last_time);
-        if elapsed.as_secs_f64() >= 1.0 / TIMER_HZ {
+        let elapsed: Duration = self.last_time.elapsed();
+        let rate: Duration = Duration::from_secs_f64(1.0 / TIMER_HZ);
+
+        if elapsed >= rate {
             if self.delay_timer > 0 {
                 self.delay_timer -= 1;
             }
             if self.sound_timer > 0 {
                 self.sound_timer -= 1;
             }
-            self.last_time = Instant::now();
+            self.last_time += rate;
         }
     }
 
@@ -378,6 +373,25 @@ impl Cpu {
                 self.variable_registers[i] = val;
                 self.index_register += 1;
             }
+        }
+    }
+
+    fn enter_subroutine(&mut self, nnn: u16, memory: &mut Memory) {
+        memory.push_stack(self.program_counter);
+        self.program_counter = nnn;
+    }
+
+    fn skip_instruction(
+        &mut self,
+        x: usize,
+        nn: u8,
+        should_equal: bool,
+        interpreter: &Interpreter,
+    ) {
+        if (self.variable_registers[x] == nn && should_equal)
+            || (self.variable_registers[x] != nn && !should_equal)
+        {
+            self.program_counter = interpreter.next_pc(self.program_counter);
         }
     }
 }
