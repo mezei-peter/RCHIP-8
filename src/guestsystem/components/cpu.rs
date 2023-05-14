@@ -10,6 +10,7 @@ use super::{
 };
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
+const MAX_INDEX_REG_VAL: u16 = 0x0FFF;
 
 #[derive(Debug)]
 pub enum CpuInst {
@@ -254,7 +255,7 @@ impl Cpu {
             CpuInst::SetRegToDelayX(x) => self.variable_registers[*x as usize] = self.delay_timer,
             CpuInst::SetDelayX(x) => self.delay_timer = self.variable_registers[*x as usize],
             CpuInst::SetSoundX(x) => self.sound_timer = self.variable_registers[*x as usize],
-            CpuInst::AddToIndexX(_) => {}
+            CpuInst::AddToIndexX(x) => self.add_to_index(*x as usize),
             CpuInst::WaitForKeyX(x) => {
                 self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
             }
@@ -314,6 +315,17 @@ impl Cpu {
                 } else {
                     self.program_counter = interpreter.prev_pc(self.program_counter);
                 }
+            }
+        }
+    }
+
+    fn add_to_index(&mut self, x: usize) {
+        let vx: u16 = self.variable_registers[x] as u16;
+        self.index_register += vx;
+        if self.index_register > MAX_INDEX_REG_VAL {
+            self.index_register %= self.index_register;
+            if self.config.modern_index_addition() {
+                self.set_flag_register(1);
             }
         }
     }

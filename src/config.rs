@@ -41,4 +41,8 @@ impl CpuConfig {
     pub fn modern_store_and_load(&self) -> bool {
         self.modern_store_and_load
     }
+
+    pub fn modern_index_addition(&self) -> bool {
+        self.modern_index_addition
+    }
 }
