@@ -60,19 +60,8 @@ impl<'a> GuestSystem<'a> {
     }
 
     fn handle_keys(&mut self, event: &Event) {
-        match event {
-            Event::KeyDown {
-                scancode: Some(scode),
-                ..
-            } => {
-                let byte_val = self.keypad.scancode_to_byte(scode);
-                if byte_val.is_none() {
-                    return;
-                } else {
-                    println!("VALID KEY!");
-                }
-            }
-            _ => {}
+        if let Event::KeyDown { scancode: Some(sc), .. } = event {
+            self.keypad.set_last_key(*sc);
         }
     }
 }
