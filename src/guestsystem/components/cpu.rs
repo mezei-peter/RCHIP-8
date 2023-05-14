@@ -1,5 +1,5 @@
 use rand::Rng;
-use sdl2::EventPump;
+use sdl2::{event::Event, keyboard::Scancode, EventPump};
 
 use crate::{config::CpuConfig, logic::interpreter::Interpreter};
 
@@ -245,8 +245,12 @@ impl Cpu {
                 memory.get_heap_slice(self.index_register, *n as u16),
                 self,
             ),
-            CpuInst::SkipIfKeyX(_) => {}
-            CpuInst::SkipIfNotKeyX(_) => {}
+            CpuInst::SkipIfKeyX(x) => {
+                self.skip_if_key(*x as usize, interpreter, keypad, event_pump, true);
+            }
+            CpuInst::SkipIfNotKeyX(x) => {
+                self.skip_if_key(*x as usize, interpreter, keypad, event_pump, false);
+            }
             CpuInst::SetRegToDelayX(_) => {}
             CpuInst::SetDelayX(_) => {}
             CpuInst::SetSoundX(_) => {}
@@ -257,6 +261,35 @@ impl Cpu {
             CpuInst::StoreInMemoryX(_) => {}
             CpuInst::LoadFromMemoryX(_) => {}
             CpuInst::InvalidInstruction => {}
+        }
+    }
+
+    fn skip_if_key(
+        &mut self,
+        reg_index: usize,
+        interpreter: &Interpreter,
+        keypad: &Keypad,
+        event_pump: &mut EventPump,
+        should_be_pressed: bool,
+    ) {
+        let key_val: u8 = self.variable_registers[reg_index];
+        let key: Option<Scancode> = keypad.byte_to_scancode(key_val);
+        if key.is_some() {
+            for event in event_pump.poll_iter() {
+                if let Event::KeyDown { scancode, .. } = event {
+                    if should_be_pressed {
+                        if scancode == key {
+                            self.program_counter = interpreter.next_pc(self.program_counter);
+                        }
+                    } else {
+                        if scancode != key {
+                            self.program_counter = interpreter.next_pc(self.program_counter);
+                        }
+                    }
+                }
+            }
+        } else if !should_be_pressed {
+            self.program_counter = interpreter.next_pc(self.program_counter);
         }
     }
 }

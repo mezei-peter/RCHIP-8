@@ -35,4 +35,26 @@ impl<'a> Keypad<'a> {
             _ => None,
         }
     }
+
+    pub fn byte_to_scancode(&self, key_val: u8) -> Option<Scancode> {
+        match key_val {
+            0x0 => Some(Scancode::X),
+            0x1 => Some(Scancode::Num1),
+            0x2 => Some(Scancode::Num2),
+            0x3 => Some(Scancode::Num3),
+            0x4 => Some(Scancode::Q),
+            0x5 => Some(Scancode::W),
+            0x6 => Some(Scancode::E),
+            0x7 => Some(Scancode::A),
+            0x8 => Some(Scancode::S),
+            0x9 => Some(Scancode::D),
+            0xA => Some(Scancode::Z),
+            0xB => Some(Scancode::C),
+            0xC => Some(Scancode::Num4),
+            0xD => Some(Scancode::R),
+            0xE => Some(Scancode::F),
+            0xF => Some(Scancode::V),
+            _ => None
+        }
+    }
 }
