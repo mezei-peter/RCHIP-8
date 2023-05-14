@@ -92,6 +92,7 @@ impl Cpu {
 
     pub fn set_pc(&mut self, address: u16, max_address: u16) {
         if address > max_address {
+            self.program_counter = PROGRAM_ADDRESS as u16;
             return;
         }
         self.program_counter = address
@@ -122,10 +123,10 @@ impl Cpu {
         match instruction {
             CpuInst::ExecMlrNNN(_) => {}
             CpuInst::Cls => display.clear_screen(),
-            CpuInst::JmpNNN(nnn) => self.program_counter = interpreter.prev_pc(*nnn),
+            CpuInst::JmpNNN(nnn) => self.program_counter = *nnn,
             CpuInst::SubRoutineNNN(nnn) => {
                 memory.push_stack(self.program_counter);
-                self.program_counter = interpreter.prev_pc(*nnn)
+                self.program_counter = *nnn
             }
             CpuInst::SubRoutineReturn => {
                 self.program_counter = memory.pop_stack().expect("Error: Cannot pop from stack")
@@ -235,10 +236,10 @@ impl Cpu {
                 if self.config.modern_jump_offset() {
                     let x: u8 = interpreter.make_x(*nnn);
                     let address = *nnn + self.variable_registers[x as usize] as u16;
-                    self.program_counter = interpreter.prev_pc(address);
+                    self.program_counter = address;
                 } else {
                     let address = *nnn + self.variable_registers[0] as u16;
-                    self.program_counter = interpreter.prev_pc(address);
+                    self.program_counter = address;
                 }
             }
             CpuInst::RandomXNN(x, nn) => {
@@ -262,7 +263,7 @@ impl Cpu {
             CpuInst::SetSoundX(x) => self.sound_timer = self.variable_registers[*x as usize],
             CpuInst::AddToIndexX(x) => self.add_to_index(*x as usize),
             CpuInst::WaitForKeyX(x) => {
-                self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
+                self.wait_for_key(*x as usize, keypad, event_pump);
             }
             CpuInst::SetIndexToFontX(x) => self.set_index_to_font(*x as usize, memory),
             CpuInst::DecimalConversionX(x) => self.store_three_decimal_digits(*x as usize, memory),
@@ -301,24 +302,18 @@ impl Cpu {
         }
     }
 
-    fn wait_for_key(
-        &mut self,
-        x: usize,
-        interpreter: &Interpreter,
-        keypad: &Keypad,
-        event_pump: &mut EventPump,
-    ) {
+    fn wait_for_key(&mut self, x: usize, keypad: &Keypad, event_pump: &mut EventPump) {
         for event in event_pump.poll_iter() {
             if let Event::KeyDown { scancode, .. } = event {
                 if scancode.is_some() {
                     let key_val = keypad.scancode_to_byte(&scancode.unwrap());
                     if key_val.is_none() {
-                        self.program_counter = interpreter.prev_pc(self.program_counter);
+                        self.program_counter = self.program_counter;
                         return;
                     }
                     self.variable_registers[x] = key_val.unwrap();
                 } else {
-                    self.program_counter = interpreter.prev_pc(self.program_counter);
+                    self.program_counter = self.program_counter;
                 }
             }
         }
