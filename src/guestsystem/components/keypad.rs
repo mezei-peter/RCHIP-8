@@ -4,6 +4,8 @@ pub struct Keypad<'a> {
     context: &'a Sdl,
     current_key: Option<Scancode>,
     released_key: Option<Scancode>,
+    last_key_val: u8,
+    last_released_key_val: u8,
 }
 
 impl<'a> Keypad<'a> {
@@ -12,6 +14,8 @@ impl<'a> Keypad<'a> {
             context,
             current_key: None,
             released_key: None,
+            last_key_val: 0xff,
+            last_released_key_val: 0xff,
         }
     }
 
@@ -65,6 +69,11 @@ impl<'a> Keypad<'a> {
     }
 
     pub fn set_current_key(&mut self, scancode: Option<Scancode>) {
+        if let Some(key) = scancode {
+            if let Some(val) = self.scancode_to_byte(&key) {
+                self.last_key_val = val;
+            }
+        }
         self.current_key = scancode
     }
 
@@ -86,6 +95,11 @@ impl<'a> Keypad<'a> {
     }
 
     pub fn set_released_key(&mut self, released_key: Option<Scancode>) {
+        if let Some(key) = released_key {
+            if let Some(val) = self.scancode_to_byte(&key) {
+                self.last_released_key_val = val;
+            }
+        }
         self.released_key = released_key;
     }
 
