@@ -184,10 +184,7 @@ impl Cpu {
                     .wrapping_add(self.variable_registers[*y as usize])
             }
             CpuInst::SubtFromLeftXY(x, y) => {
-                if self.variable_registers[*x as usize]
-                    .checked_sub(self.variable_registers[*y as usize])
-                    .is_none()
-                {
+                if self.variable_registers[*x as usize] > self.variable_registers[*y as usize] {
                     self.set_flag_register(1);
                 } else {
                     self.set_flag_register(0);
@@ -196,16 +193,13 @@ impl Cpu {
                     .wrapping_sub(self.variable_registers[*y as usize])
             }
             CpuInst::SubtFromRightXY(x, y) => {
-                if self.variable_registers[*y as usize]
-                    .checked_sub(self.variable_registers[*x as usize])
-                    .is_none()
-                {
+                if self.variable_registers[*y as usize] > self.variable_registers[*x as usize] {
                     self.set_flag_register(1);
                 } else {
                     self.set_flag_register(0);
                 }
-                self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
-                    .wrapping_sub(self.variable_registers[*x as usize])
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
+                    .wrapping_sub(self.variable_registers[*y as usize])
             }
             CpuInst::ShiftLeftXY(x, y) => {
                 if !self.config.modern_shift() {
