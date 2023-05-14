@@ -164,42 +164,9 @@ impl Cpu {
                 self.variable_registers[*x as usize] =
                     self.variable_registers[*x as usize] ^ self.variable_registers[*y as usize]
             }
-            CpuInst::AddXY(x, y) => {
-                let overflow: bool = self.variable_registers[*x as usize]
-                    .checked_add(self.variable_registers[*y as usize])
-                    .is_none();
-                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                    .wrapping_add(self.variable_registers[*y as usize]);
-                if overflow {
-                    self.set_flag_register(1);
-                } else {
-                    self.set_flag_register(0);
-                }
-            }
-            CpuInst::SubtFromLeftXY(x, y) => {
-                let flag: u8 = if self.variable_registers[*x as usize]
-                    > self.variable_registers[*y as usize]
-                {
-                    1
-                } else {
-                    0
-                };
-                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                    .wrapping_sub(self.variable_registers[*y as usize]);
-                self.set_flag_register(flag);
-            }
-            CpuInst::SubtFromRightXY(x, y) => {
-                let flag: u8 = if self.variable_registers[*y as usize]
-                    > self.variable_registers[*x as usize]
-                {
-                    1
-                } else {
-                    0
-                };
-                self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
-                    .wrapping_sub(self.variable_registers[*x as usize]);
-                self.set_flag_register(flag);
-            }
+            CpuInst::AddXY(x, y) => self.add_regs(*x as usize, *y as usize),
+            CpuInst::SubtFromLeftXY(x, y) => self.subt_regs_left(*x as usize, *y as usize),
+            CpuInst::SubtFromRightXY(x, y) => self.subt_regs_right(*x as usize, *y as usize),
             CpuInst::ShiftLeftXY(x, y) => {
                 if !self.config.modern_shift() {
                     self.variable_registers[*x as usize] = self.variable_registers[*y as usize];
@@ -262,6 +229,43 @@ impl Cpu {
             CpuInst::LoadFromMemoryX(x) => self.load_x_regs(*x as usize + 1, memory),
             CpuInst::InvalidInstruction => {}
         }
+    }
+
+    fn add_regs(&mut self, x: usize, y: usize) {
+        let overflow: bool = self.variable_registers[x as usize]
+            .checked_add(self.variable_registers[y as usize])
+            .is_none();
+        self.variable_registers[x as usize] =
+            self.variable_registers[x as usize].wrapping_add(self.variable_registers[y as usize]);
+        if overflow {
+            self.set_flag_register(1);
+        } else {
+            self.set_flag_register(0);
+        }
+    }
+
+    fn subt_regs_left(&mut self, x: usize, y: usize) {
+        let flag: u8 = if self.variable_registers[x as usize] > self.variable_registers[y as usize]
+        {
+            1
+        } else {
+            0
+        };
+        self.variable_registers[x as usize] =
+            self.variable_registers[x as usize].wrapping_sub(self.variable_registers[y as usize]);
+        self.set_flag_register(flag);
+    }
+
+    fn subt_regs_right(&mut self, x: usize, y: usize) {
+        let flag: u8 = if self.variable_registers[y as usize] > self.variable_registers[x as usize]
+        {
+            1
+        } else {
+            0
+        };
+        self.variable_registers[x as usize] =
+            self.variable_registers[y as usize].wrapping_sub(self.variable_registers[x as usize]);
+        self.set_flag_register(flag);
     }
 
     fn skip_if_key(
