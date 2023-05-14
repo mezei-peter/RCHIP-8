@@ -60,4 +60,8 @@ impl Memory {
         let addr = FONTS_ADDRESS + (font_val as usize) * FONT_SIZE;
         addr as u16
     }
+
+    pub fn set_heap(&mut self, address: u16, byte: u8) {
+        self.heap[address as usize] = byte;
+    }
 }

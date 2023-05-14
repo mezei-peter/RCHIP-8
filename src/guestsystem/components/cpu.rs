@@ -1,4 +1,4 @@
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 use rand::Rng;
 use sdl2::{event::Event, keyboard::Scancode, EventPump};
@@ -265,7 +265,7 @@ impl Cpu {
                 self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
             }
             CpuInst::SetIndexToFontX(x) => self.set_index_to_font(*x as usize, memory),
-            CpuInst::DecimalConversionX(_) => {}
+            CpuInst::DecimalConversionX(x) => self.store_three_decimal_digits(*x as usize, memory),
             CpuInst::StoreInMemoryX(_) => {}
             CpuInst::LoadFromMemoryX(_) => {}
             CpuInst::InvalidInstruction => {}
@@ -356,5 +356,20 @@ impl Cpu {
         let vx: u8 = self.variable_registers[x];
         let font_val: u8 = vx & 0x0F;
         self.index_register = memory.get_font(font_val);
+    }
+
+    fn store_three_decimal_digits(&self, x: usize, memory: &mut Memory) {
+        let i: u16 = self.index_register;
+
+        let mut value: u8 = self.variable_registers[x];
+        let dig_3: u8 = value % 10;
+        value -= dig_3;
+        let dig_2: u8 = (value % 100) / 10;
+        value -= dig_2 * 10;
+        let dig_1: u8 = value / 100;
+        
+        memory.set_heap(i, dig_1);
+        memory.set_heap(i + 1, dig_2);
+        memory.set_heap(i + 2, dig_3);
     }
 }
