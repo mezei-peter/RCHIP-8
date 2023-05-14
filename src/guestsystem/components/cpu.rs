@@ -17,7 +17,7 @@ pub enum CpuInst {
     Cls,
     JmpNNN(u16),
     SubRoutineNNN(u16),
-    SubReturn,
+    SubRoutineReturn,
     SkipIfEqXNN(u8, u8),
     SkipIfNotEqXNN(u8, u8),
     SkipIfEqXY(u8, u8),
@@ -29,8 +29,8 @@ pub enum CpuInst {
     BitAndXY(u8, u8),
     BitXorXY(u8, u8),
     AddXY(u8, u8),
-    SubsFromLeftXY(u8, u8),
-    SubsFromRightXY(u8, u8),
+    SubtFromLeftXY(u8, u8),
+    SubtFromRightXY(u8, u8),
     ShiftLeftXY(u8, u8),
     ShiftRightXY(u8, u8),
     SetIndexNNN(u16),
@@ -121,7 +121,7 @@ impl Cpu {
                 memory.push_stack(self.program_counter);
                 self.program_counter = interpreter.prev_pc(*nnn)
             }
-            CpuInst::SubReturn => {
+            CpuInst::SubRoutineReturn => {
                 self.program_counter = memory.pop_stack().expect("Error: Cannot from pop stack")
             }
             CpuInst::SkipIfEqXNN(x, nn) => {
@@ -176,7 +176,7 @@ impl Cpu {
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
                     .wrapping_add(self.variable_registers[*y as usize])
             }
-            CpuInst::SubsFromLeftXY(x, y) => {
+            CpuInst::SubtFromLeftXY(x, y) => {
                 if self.variable_registers[*x as usize]
                     .checked_sub(self.variable_registers[*y as usize])
                     .is_none()
@@ -188,7 +188,7 @@ impl Cpu {
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
                     .wrapping_sub(self.variable_registers[*y as usize])
             }
-            CpuInst::SubsFromRightXY(x, y) => {
+            CpuInst::SubtFromRightXY(x, y) => {
                 if self.variable_registers[*y as usize]
                     .checked_sub(self.variable_registers[*x as usize])
                     .is_none()

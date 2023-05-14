@@ -82,7 +82,7 @@ impl Interpreter {
 
     fn decode_0(&self, raw: u16) -> CpuInst {
         if raw & 0x00FF == 0x00EE {
-            return CpuInst::SubReturn;
+            return CpuInst::SubRoutineReturn;
         }
         if raw & 0x00F0 == 0x00E0 {
             return CpuInst::Cls;
@@ -97,9 +97,9 @@ impl Interpreter {
             0x0002 => CpuInst::BitAndXY(self.make_x(raw), self.make_y(raw)),
             0x0003 => CpuInst::BitXorXY(self.make_x(raw), self.make_y(raw)),
             0x0004 => CpuInst::AddXY(self.make_x(raw), self.make_y(raw)),
-            0x0005 => CpuInst::SubsFromLeftXY(self.make_x(raw), self.make_y(raw)),
+            0x0005 => CpuInst::SubtFromLeftXY(self.make_x(raw), self.make_y(raw)),
             0x0006 => CpuInst::ShiftRightXY(self.make_x(raw), self.make_y(raw)),
-            0x0007 => CpuInst::SubsFromRightXY(self.make_x(raw), self.make_y(raw)),
+            0x0007 => CpuInst::SubtFromRightXY(self.make_x(raw), self.make_y(raw)),
             0x000E => CpuInst::ShiftLeftXY(self.make_x(raw), self.make_y(raw)),
             _ => CpuInst::InvalidInstruction,
         }
