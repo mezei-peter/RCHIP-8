@@ -30,8 +30,8 @@ impl Memory {
         let length: usize = buffer.len();
         let mut i: usize = 0;
         while i < length {
-            let font_byte: u8 = buffer[i];
-            self.heap[address + i] = font_byte;
+            let byte: u8 = buffer[i];
+            self.heap[address + i] = byte;
             i += 1;
         }
     }
