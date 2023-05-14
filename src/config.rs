@@ -3,6 +3,7 @@ pub struct CpuConfig {
     modern_shift: bool,
     modern_jump_offset: bool,
     modern_store_and_load: bool,
+    modern_index_addition: bool,
 }
 
 impl CpuConfig {
@@ -10,11 +11,13 @@ impl CpuConfig {
         modern_shift: bool,
         modern_jump_offset: bool,
         modern_store_and_load: bool,
+        modern_index_addition: bool,
     ) -> CpuConfig {
         CpuConfig {
             modern_shift,
             modern_jump_offset,
             modern_store_and_load,
+            modern_index_addition,
         }
     }
 
@@ -23,6 +26,7 @@ impl CpuConfig {
             modern_shift: true,
             modern_jump_offset: false,
             modern_store_and_load: true,
+            modern_index_addition: true,
         }
     }
 
