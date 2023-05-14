@@ -292,21 +292,14 @@ impl Cpu {
 
     fn wait_for_key(&mut self, x: usize, keypad: &Keypad, interpreter: &Interpreter) {
         let current_key: Option<Scancode> = keypad.current_key();
-        if current_key.is_none() {
-            self.program_counter = interpreter.prev_pc(self.program_counter);
-            return;
+        if current_key.is_some() {
+            let key_val: Option<u8> = keypad.scancode_to_byte(&current_key.unwrap());
+            if key_val.is_some() {
+                self.variable_registers[x] = key_val.unwrap();
+                return;
+            }
         }
-        let key_val: Option<u8> = keypad.scancode_to_byte(&current_key.unwrap());
-        if key_val.is_none() {
-            self.program_counter = interpreter.prev_pc(self.program_counter);
-            return;
-        }
-        let same_key_released: bool = keypad.same_released_key_val(key_val.unwrap());
-        if !same_key_released {
-            self.program_counter = interpreter.prev_pc(self.program_counter);
-            return;
-        }
-        self.variable_registers[x] = key_val.unwrap();
+        self.program_counter = interpreter.prev_pc(self.program_counter);
     }
 
     fn add_to_index(&mut self, x: usize) {
