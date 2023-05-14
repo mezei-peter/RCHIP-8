@@ -264,7 +264,7 @@ impl Cpu {
             CpuInst::WaitForKeyX(x) => {
                 self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
             }
-            CpuInst::SetIndexToFontX(_) => {}
+            CpuInst::SetIndexToFontX(x) => self.set_index_to_font(*x as usize, memory),
             CpuInst::DecimalConversionX(_) => {}
             CpuInst::StoreInMemoryX(_) => {}
             CpuInst::LoadFromMemoryX(_) => {}
@@ -350,5 +350,11 @@ impl Cpu {
 
     pub fn should_beep(&self) -> bool {
         self.sound_timer > 0
+    }
+
+    fn set_index_to_font(&mut self, x: usize, memory: &Memory) {
+        let vx: u8 = self.variable_registers[x];
+        let font_val: u8 = vx & 0x0F;
+        self.index_register = memory.get_font(font_val);
     }
 }

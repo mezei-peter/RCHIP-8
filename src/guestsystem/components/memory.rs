@@ -55,4 +55,9 @@ impl Memory {
     pub fn pop_stack(&mut self) -> Option<u16> {
         self.stack.pop()
     }
+
+    pub fn get_font(&self, font_val: u8) -> u16 {
+        let addr = FONTS_ADDRESS + (font_val as usize) * FONT_SIZE;
+        addr as u16
+    }
 }
