@@ -251,9 +251,9 @@ impl Cpu {
             CpuInst::SkipIfNotKeyX(x) => {
                 self.skip_if_key(*x as usize, interpreter, keypad, event_pump, false);
             }
-            CpuInst::SetRegToDelayX(_) => {}
-            CpuInst::SetDelayX(_) => {}
-            CpuInst::SetSoundX(_) => {}
+            CpuInst::SetRegToDelayX(x) => self.variable_registers[*x as usize] = self.delay_timer,
+            CpuInst::SetDelayX(x) => self.delay_timer = self.variable_registers[*x as usize],
+            CpuInst::SetSoundX(x) => self.sound_timer = self.variable_registers[*x as usize],
             CpuInst::AddToIndexX(_) => {}
             CpuInst::WaitForKeyX(x) => {
                 self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
