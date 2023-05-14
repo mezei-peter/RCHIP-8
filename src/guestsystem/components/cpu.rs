@@ -170,16 +170,7 @@ impl Cpu {
             CpuInst::ShiftLeftXY(x, y) => self.shift_left(*x as usize, *y as usize),
             CpuInst::ShiftRightXY(x, y) => self.shift_right(*x as usize, *y as usize),
             CpuInst::SetIndexNNN(nnn) => self.index_register = *nnn,
-            CpuInst::JmpOffsetNNN(nnn) => {
-                if self.config.modern_jump_offset() {
-                    let x: u8 = interpreter.make_x(*nnn);
-                    let address = *nnn + self.variable_registers[x as usize] as u16;
-                    self.program_counter = address;
-                } else {
-                    let address = *nnn + self.variable_registers[0] as u16;
-                    self.program_counter = address;
-                }
-            }
+            CpuInst::JmpOffsetNNN(nnn) => self.jump_with_offset(*nnn, interpreter),
             CpuInst::RandomXNN(x, nn) => {
                 let random_number: u8 = rand::thread_rng().gen();
                 self.variable_registers[*x as usize] = random_number & *nn;
@@ -206,6 +197,17 @@ impl Cpu {
             CpuInst::StoreInMemoryX(x) => self.store_x_regs(*x as usize + 1, memory),
             CpuInst::LoadFromMemoryX(x) => self.load_x_regs(*x as usize + 1, memory),
             CpuInst::InvalidInstruction => {}
+        }
+    }
+
+    fn jump_with_offset(&mut self, nnn: u16, interpreter: &Interpreter) {
+        if self.config.modern_jump_offset() {
+            let x: u8 = interpreter.make_x(nnn);
+            let address = nnn + self.variable_registers[x as usize] as u16;
+            self.program_counter = address;
+        } else {
+            let address = nnn + self.variable_registers[0] as u16;
+            self.program_counter = address;
         }
     }
 
