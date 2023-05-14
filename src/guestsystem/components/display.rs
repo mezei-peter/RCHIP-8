@@ -9,7 +9,7 @@ const COLOR_ON: Color = Color::WHITE;
 const WIDTH: u8 = 64;
 const HEIGHT: u8 = 32;
 const SIZE_MULTIPLIER: u8 = 10;
-const REFRESH_FPS: f64 = 60.0;
+const REFRESH_FPS: f64 = 160.0;
 
 pub struct DisplayScreen<'a> {
     context: &'a Sdl,
