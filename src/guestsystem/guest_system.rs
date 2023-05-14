@@ -1,13 +1,9 @@
-use sdl2::{
-    event::Event,
-    keyboard::{Keycode, Scancode},
-    Sdl,
-};
+use sdl2::{event::Event, keyboard::Keycode, Sdl};
 
 use crate::logic::interpreter::Interpreter;
 
 use super::components::{
-    cpu::{Cpu, CpuInstruction},
+    cpu::{Cpu, CpuInst},
     display::DisplayScreen,
     keypad::Keypad,
     memory::Memory,
@@ -40,7 +36,7 @@ impl<'a> GuestSystem<'a> {
         let mut event_pump = self.sdl_ctx.event_pump().unwrap();
         'running: loop {
             let raw_instruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
-            let instruction: CpuInstruction = self.cpu.decode(raw_instruction, interpreter);
+            let instruction: CpuInst = self.cpu.decode(raw_instruction, interpreter);
             self.cpu.execute(
                 &instruction,
                 &interpreter,

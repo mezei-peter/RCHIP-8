@@ -1,7 +1,4 @@
-use std::{
-    thread,
-    time::{Duration, Instant},
-};
+use std::{thread, time::Duration};
 
 use sdl2::{pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl, VideoSubsystem};
 
@@ -18,7 +15,6 @@ pub struct DisplayScreen<'a> {
     context: &'a Sdl,
     canvas: Canvas<Window>,
     pixels: [[bool; HEIGHT as usize]; WIDTH as usize],
-    last_frame_time: Instant,
 }
 
 impl<'a> DisplayScreen<'a> {
@@ -38,14 +34,16 @@ impl<'a> DisplayScreen<'a> {
             context,
             canvas,
             pixels: [[false; HEIGHT as usize]; WIDTH as usize],
-            last_frame_time: Instant::now(),
         }
     }
 
     pub fn clear_screen(&mut self) {
-        self.pixels.iter_mut().for_each(|col| col.fill(false));
+        for mut col in self.pixels {
+            col.fill(false);
+        }
         self.canvas.set_draw_color(COLOR_OFF);
         self.canvas.clear();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
     }
 
@@ -55,15 +53,9 @@ impl<'a> DisplayScreen<'a> {
 
         for data in sprite {
             let mut x: u8 = x_coord % WIDTH;
-            if y > HEIGHT {
-                break;
-            }
             let mut byte: u8 = data.clone();
             for _ in 0..8 {
-                if x >= WIDTH {
-                    break;
-                }
-                let bit: bool = byte.leading_ones() > 0;
+                let bit: bool = byte & 0x80 == 0x80;
                 let pixel: bool = self.pixels[x as usize][y as usize];
                 if bit && pixel {
                     self.erase_pixel(x, y);
@@ -71,8 +63,14 @@ impl<'a> DisplayScreen<'a> {
                 } else if bit && !pixel {
                     self.draw_pixel(x, y);
                 }
-                byte <<= 1;
+                if x == WIDTH - 1 {
+                    break;
+                }
                 x += 1;
+                byte <<= 1;
+            }
+            if y == HEIGHT - 1 {
+                break;
             }
             y += 1;
         }
@@ -87,7 +85,7 @@ impl<'a> DisplayScreen<'a> {
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while drawing pixel on display.");
-        self.wait_for_refresh();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
     }
 
@@ -100,15 +98,7 @@ impl<'a> DisplayScreen<'a> {
         self.canvas
             .fill_rect(Rect::new(x_canv, y_canv, px_size, px_size))
             .expect("Error while erasing pixel on display.");
-        self.wait_for_refresh();
+        thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS));
         self.canvas.present();
-    }
-
-    fn wait_for_refresh(&mut self) {
-        let elapsed: Duration = self.last_frame_time.elapsed();
-        if elapsed < Duration::from_secs_f64(1.0 / REFRESH_FPS) {
-            thread::sleep(Duration::from_secs_f64(1.0 / REFRESH_FPS) - elapsed);
-        }
-        self.last_frame_time = Instant::now();
     }
 }
