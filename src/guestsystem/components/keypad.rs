@@ -62,4 +62,17 @@ impl<'a> Keypad<'a> {
     pub fn set_current_key(&mut self, scancode: Option<Scancode>) {
         self.current_key = scancode
     }
+
+    pub fn same_current_key_val(&self, key_val: u8) -> bool {
+        match self.current_key {
+            Some(scancode) => {
+                let current_val: Option<u8> = self.scancode_to_byte(&scancode);
+                if current_val.is_none() {
+                    return false;
+                }
+                current_val.unwrap() == key_val
+            }
+            None => false
+        }
+    }
 }

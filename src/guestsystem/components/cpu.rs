@@ -247,10 +247,10 @@ impl Cpu {
                 self,
             ),
             CpuInst::SkipIfKeyX(x) => {
-                self.skip_if_key(*x as usize, interpreter, keypad, event_pump, true);
+                self.skip_if_key(*x as usize, interpreter, keypad, true);
             }
             CpuInst::SkipIfNotKeyX(x) => {
-                self.skip_if_key(*x as usize, interpreter, keypad, event_pump, false);
+                self.skip_if_key(*x as usize, interpreter, keypad, false);
             }
             CpuInst::SetRegToDelayX(x) => self.variable_registers[*x as usize] = self.delay_timer,
             CpuInst::SetDelayX(x) => self.delay_timer = self.variable_registers[*x as usize],
@@ -272,44 +272,18 @@ impl Cpu {
         reg_index: usize,
         interpreter: &Interpreter,
         keypad: &Keypad,
-        event_pump: &mut EventPump,
         should_be_pressed: bool,
     ) {
         let key_val: u8 = self.variable_registers[reg_index] & 0x0F;
-        /*if should_be_pressed {
-            for event in event_pump.poll_iter() {
-                dbg!(&event);
-                if let Event::KeyDown {
-                    scancode: Some(sc), ..
-                } = event
-                {
-                    let pressed_val: Option<u8> = keypad.scancode_to_byte(&sc);
-                    if pressed_val.is_some() {
-                        if pressed_val.unwrap() == key_val {
-                            self.program_counter = interpreter.next_pc(self.program_counter);
-                        }
-                    }
-                }
+        if should_be_pressed {
+            if keypad.same_current_key_val(key_val) {
+                self.program_counter = interpreter.next_pc(self.program_counter);
             }
         } else {
-            for event in event_pump.poll_iter() {
-                if let Event::KeyDown { scancode, .. } = event {
-                    if scancode.is_none() {
-                        self.program_counter = interpreter.next_pc(self.program_counter);
-                    } else {
-                        let sc: Scancode = scancode.unwrap();
-                        let pressed_val: Option<u8> = keypad.scancode_to_byte(&sc);
-                        if pressed_val.is_none() {
-                            self.program_counter = interpreter.next_pc(self.program_counter);
-                        } else {
-                            if pressed_val.unwrap() != key_val {
-                                self.program_counter = interpreter.next_pc(self.program_counter);
-                            }
-                        }
-                    }
-                }
+            if !keypad.same_current_key_val(key_val) {
+                self.program_counter = interpreter.next_pc(self.program_counter);
             }
-        }*/
+        }
     }
 
     fn wait_for_key(&mut self, x: usize, keypad: &Keypad, event_pump: &mut EventPump) {
