@@ -255,7 +255,9 @@ impl Cpu {
             CpuInst::SetDelayX(_) => {}
             CpuInst::SetSoundX(_) => {}
             CpuInst::AddToIndexX(_) => {}
-            CpuInst::WaitForKeyX(_) => {}
+            CpuInst::WaitForKeyX(x) => {
+                self.wait_for_key(*x as usize, interpreter, keypad, event_pump);
+            }
             CpuInst::SetIndexToFontX(_) => {}
             CpuInst::DecimalConversionX(_) => {}
             CpuInst::StoreInMemoryX(_) => {}
@@ -290,6 +292,29 @@ impl Cpu {
             }
         } else if !should_be_pressed {
             self.program_counter = interpreter.next_pc(self.program_counter);
+        }
+    }
+
+    fn wait_for_key(
+        &mut self,
+        x: usize,
+        interpreter: &Interpreter,
+        keypad: &Keypad,
+        event_pump: &mut EventPump,
+    ) {
+        for event in event_pump.poll_iter() {
+            if let Event::KeyDown { scancode, .. } = event {
+                if scancode.is_some() {
+                    let key_val = keypad.scancode_to_byte(&scancode.unwrap());
+                    if key_val.is_none() {
+                        self.program_counter = interpreter.prev_pc(self.program_counter);
+                        return;
+                    }
+                    self.variable_registers[x] = key_val.unwrap();
+                } else {
+                    self.program_counter = interpreter.prev_pc(self.program_counter);
+                }
+            }
         }
     }
 }
