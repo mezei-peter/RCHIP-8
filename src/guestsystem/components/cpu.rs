@@ -172,34 +172,40 @@ impl Cpu {
                     self.variable_registers[*x as usize] ^ self.variable_registers[*y as usize]
             }
             CpuInst::AddXY(x, y) => {
-                if self.variable_registers[*x as usize]
+                let overflow: bool = self.variable_registers[*x as usize]
                     .checked_add(self.variable_registers[*y as usize])
-                    .is_none()
-                {
+                    .is_none();
+                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
+                    .wrapping_add(self.variable_registers[*y as usize]);
+                if overflow {
                     self.set_flag_register(1);
                 } else {
                     self.set_flag_register(0);
                 }
-                self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                    .wrapping_add(self.variable_registers[*y as usize])
             }
             CpuInst::SubtFromLeftXY(x, y) => {
-                if self.variable_registers[*x as usize] > self.variable_registers[*y as usize] {
-                    self.set_flag_register(1);
+                let flag: u8 = if self.variable_registers[*x as usize]
+                    > self.variable_registers[*y as usize]
+                {
+                    1
                 } else {
-                    self.set_flag_register(0);
-                }
+                    0
+                };
                 self.variable_registers[*x as usize] = self.variable_registers[*x as usize]
-                    .wrapping_sub(self.variable_registers[*y as usize])
+                    .wrapping_sub(self.variable_registers[*y as usize]);
+                self.set_flag_register(flag);
             }
             CpuInst::SubtFromRightXY(x, y) => {
-                if self.variable_registers[*y as usize] > self.variable_registers[*x as usize] {
-                    self.set_flag_register(1);
+                let flag: u8 = if self.variable_registers[*y as usize]
+                    > self.variable_registers[*x as usize]
+                {
+                    1
                 } else {
-                    self.set_flag_register(0);
-                }
+                    0
+                };
                 self.variable_registers[*x as usize] = self.variable_registers[*y as usize]
-                    .wrapping_sub(self.variable_registers[*x as usize])
+                    .wrapping_sub(self.variable_registers[*x as usize]);
+                self.set_flag_register(flag);
             }
             CpuInst::ShiftLeftXY(x, y) => {
                 if !self.config.modern_shift() {
