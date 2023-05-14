@@ -35,6 +35,7 @@ impl<'a> GuestSystem<'a> {
 
         let mut event_pump = self.sdl_ctx.event_pump().unwrap();
         'running: loop {
+            self.cpu.operate_timers();
             let raw_instruction: u16 = self.cpu.fetch(&self.memory, &interpreter);
             let instruction: CpuInst = self.cpu.decode(raw_instruction, interpreter);
             self.cpu.execute(

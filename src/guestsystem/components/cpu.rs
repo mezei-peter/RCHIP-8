@@ -1,3 +1,5 @@
+use std::time::{Instant, Duration};
+
 use rand::Rng;
 use sdl2::{event::Event, keyboard::Scancode, EventPump};
 
@@ -11,6 +13,7 @@ use super::{
 
 const VARIABLE_REGISTER_COUNT: usize = 16;
 const MAX_INDEX_REG_VAL: u16 = 0x0FFF;
+const TIMER_HZ: f64 = 60.0;
 
 #[derive(Debug)]
 pub enum CpuInst {
@@ -59,6 +62,7 @@ pub struct Cpu {
     delay_timer: u8,
     sound_timer: u8,
     config: CpuConfig,
+    last_time: Instant,
 }
 
 impl Cpu {
@@ -70,6 +74,7 @@ impl Cpu {
             delay_timer: 0,
             sound_timer: 0,
             config,
+            last_time: Instant::now(),
         }
     }
 
@@ -328,5 +333,22 @@ impl Cpu {
                 self.set_flag_register(1);
             }
         }
+    }
+
+    pub fn operate_timers(&mut self) {
+        let elapsed: Duration = Instant::elapsed(&self.last_time);
+        if elapsed.as_secs_f64() >= 1.0 / TIMER_HZ {
+            if self.delay_timer > 0 {
+                self.delay_timer -= 1;
+            }
+            if self.sound_timer > 0 {
+                self.sound_timer -= 1;
+            }
+            self.last_time = Instant::now();
+        }
+    }
+
+    pub fn should_beep(&self) -> bool {
+        self.sound_timer > 0
     }
 }
