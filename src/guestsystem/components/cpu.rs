@@ -266,7 +266,7 @@ impl Cpu {
             }
             CpuInst::SetIndexToFontX(x) => self.set_index_to_font(*x as usize, memory),
             CpuInst::DecimalConversionX(x) => self.store_three_decimal_digits(*x as usize, memory),
-            CpuInst::StoreInMemoryX(_) => {}
+            CpuInst::StoreInMemoryX(x) => self.store_x_regs(*x as usize + 1, memory),
             CpuInst::LoadFromMemoryX(_) => {}
             CpuInst::InvalidInstruction => {}
         }
@@ -367,9 +367,24 @@ impl Cpu {
         let dig_2: u8 = (value % 100) / 10;
         value -= dig_2 * 10;
         let dig_1: u8 = value / 100;
-        
+
         memory.set_heap(i, dig_1);
         memory.set_heap(i + 1, dig_2);
         memory.set_heap(i + 2, dig_3);
+    }
+
+    fn store_x_regs(&mut self, reg_count: usize, memory: &mut Memory) {
+        if self.config.modern_store_and_load() {
+            for i in 0..reg_count {
+                let vi: u8 = self.variable_registers[i];
+                memory.set_heap(self.index_register + i as u16, vi);
+            }
+        } else {
+            for i in 0..reg_count {
+                let vi: u8 = self.variable_registers[i];
+                memory.set_heap(self.index_register, vi);
+                self.index_register += 1;
+            }
+        }
     }
 }
