@@ -122,7 +122,7 @@ impl Cpu {
                 self.program_counter = interpreter.prev_pc(*nnn)
             }
             CpuInst::SubRoutineReturn => {
-                self.program_counter = memory.pop_stack().expect("Error: Cannot from pop stack")
+                self.program_counter = memory.pop_stack().expect("Error: Cannot pop from stack")
             }
             CpuInst::SkipIfEqXNN(x, nn) => {
                 if self.variable_registers[*x as usize] == *nn {
