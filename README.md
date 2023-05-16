@@ -1,4 +1,7 @@
 # RCHIP-8: A CHIP-8 emulator/interpreter written in Rust
+⚠️Work in progress⚠️
+
+My other CHIP-8 emulator project (in C): https://github.com/mezei-peter/CCHIP-8
 
 ## Introduction
 The aim of this personal project is to create an **interpreter and an emulated system** so that **binary .ch8 files turn into runnable programs**.
